@@ -40,13 +40,23 @@ function time_ago($datetime, $timezone = 'Asia/Jakarta') {
     date_default_timezone_set($timezone);
     $ts = is_numeric($datetime) ? (int)$datetime : strtotime($datetime);
     $diff = time() - $ts;
-    if($diff < 60) return $diff.' detik lalu';
-    $diff = floor($diff/60);
-    if($diff < 60) return $diff.' menit lalu';
-    $diff = floor($diff/60);
-    if($diff < 24) return $diff.' jam lalu';
-    $diff = floor($diff/24);
-    return $diff.' hari lalu';
+    if ($diff < 5) return 'baru saja';
+    if ($diff < 60) {
+        $s = $diff;
+        return $s.' detik yang lalu';
+    }
+    $diff = floor($diff / 60);
+    if ($diff < 60) {
+        $m = $diff;
+        return $m.' menit yang lalu';
+    }
+    $diff = floor($diff / 60);
+    if ($diff < 24) {
+        $h = $diff;
+        return $h.' jam yang lalu';
+    }
+    $d = floor($diff / 24);
+    return $d.' hari yang lalu';
 }
 
 function format_tz($datetime, $timezone = 'Asia/Jakarta', $format = 'Y-m-d H:i:s') {

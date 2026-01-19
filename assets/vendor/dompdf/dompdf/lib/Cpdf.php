@@ -5543,7 +5543,7 @@ EOT;
      * @param bool $mask true if the image is masked
      * @throws Exception
      */
-    function addImagePng($file, $x, $y, $w = 0.0, $h = 0.0, &$img, $is_mask = false, $mask = null)
+    function addImagePng($file, $x, $y, &$img, $w = 0.0, $h = 0.0, $is_mask = false, $mask = null)
     {
         if (!function_exists("imagepng")) {
             throw new \Exception("The PHP GD extension is required, but is not installed.");
@@ -5595,7 +5595,7 @@ EOT;
             }
         }  //End isset($this->imagelist[$file]) (png Duplicate removal)
 
-        $this->addPngFromBuf($file, $x, $y, $w, $h, $data, $is_mask, $mask);
+        $this->addPngFromBuf($file, $x, $y, $data, $w, $h, $is_mask, $mask);
     }
 
     /**
@@ -5759,12 +5759,12 @@ EOT;
 
         // embed mask image
         if ($tempfile_alpha) {
-            $this->addImagePng($tempfile_alpha, $x, $y, $w, $h, $imgalpha, true);
+            $this->addImagePng($tempfile_alpha, $x, $y, $imgalpha, $w, $h, true);
             imagedestroy($imgalpha);
         }
 
         // embed image, masked with previously embedded mask
-        $this->addImagePng($tempfile_plain, $x, $y, $w, $h, $imgplain, false, ($tempfile_alpha !== null));
+        $this->addImagePng($tempfile_plain, $x, $y, $imgplain, $w, $h, false, ($tempfile_alpha !== null));
         imagedestroy($imgplain);
 
         // remove temp files
@@ -5844,7 +5844,7 @@ EOT;
             imagecopy($img, $imgtmp, 0, 0, 0, 0, $sx, $sy);
             imagedestroy($imgtmp);
         }
-        $this->addImagePng($file, $x, $y, $w, $h, $img);
+        $this->addImagePng($file, $x, $y, $img, $w, $h);
 
         if ($img) {
             imagedestroy($img);
@@ -5889,7 +5889,7 @@ EOT;
      * @param bool $is_mask
      * @param null $mask
      */
-    function addPngFromBuf($file, $x, $y, $w = 0.0, $h = 0.0, &$data, $is_mask = false, $mask = null)
+    function addPngFromBuf($file, $x, $y, &$data, $w = 0.0, $h = 0.0, $is_mask = false, $mask = null)
     {
         if (isset($this->imagelist[$file])) {
             $data = null;
@@ -6218,7 +6218,7 @@ EOT;
             $h = $w * $imageHeight / $imageWidth;
         }
 
-        $this->addJpegImage_common($data, $x, $y, $w, $h, $imageWidth, $imageHeight, $channels, $img);
+        $this->addJpegImage_common($data, $x, $y, $imageWidth, $imageHeight, $img, $w, $h, $channels);
     }
 
     /**
@@ -6237,12 +6237,12 @@ EOT;
         &$data,
         $x,
         $y,
-        $w = 0,
-        $h = 0,
         $imageWidth,
         $imageHeight,
-        $channels = 3,
-        $imgname
+        $imgname,
+        $w = 0,
+        $h = 0,
+        $channels = 3
     ) {
         if ($this->image_iscached($imgname)) {
             $label = $this->imagelist[$imgname]['label'];

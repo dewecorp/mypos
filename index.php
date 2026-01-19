@@ -89,6 +89,9 @@ switch (ENVIRONMENT)
 		exit(1); // EXIT_ERROR
 }
 
+// Set default timezone for the whole application
+date_default_timezone_set('Asia/Jakarta');
+
 /*
  *---------------------------------------------------------------
  * SYSTEM DIRECTORY NAME

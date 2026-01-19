@@ -54,6 +54,8 @@ class CanvasFactory
             }
         }
 
-        return new $class($paper, $orientation, $dompdf);
+        $paper = $paper ?? "letter";
+        $orientation = $orientation ?? "portrait";
+        return new $class($dompdf, $paper, $orientation);
     }
 }

@@ -421,7 +421,7 @@ abstract class AbstractRenderer
         //don't create temp file, but place gd object directly into the pdf
         if (!$is_png && $this->_canvas instanceof CPDF) {
             // Note: CPDF_Adapter image converts y position
-            $this->_canvas->get_cpdf()->addImagePng($filedummy, $x, $this->_canvas->get_height() - $y - $height, $width, $height, $bg);
+            $this->_canvas->get_cpdf()->addImagePng($filedummy, $x, $this->_canvas->get_height() - $y - $height, $bg, $width, $height);
         } else {
             $tmp_dir = $this->_dompdf->getOptions()->getTempDir();
             $tmp_name = @tempnam($tmp_dir, "bg_dompdf_img_");
@@ -533,7 +533,7 @@ abstract class AbstractRenderer
      */
     protected function _border_dotted($x, $y, $length, $color, $widths, $side, $corner_style = "bevel", $r1 = 0, $r2 = 0)
     {
-        $this->_border_line($x, $y, $length, $color, $widths, $side, $corner_style, "dotted", $r1, $r2);
+        $this->_border_line($x, $y, $length, $color, $widths, $side, "dotted", $corner_style, $r1, $r2);
     }
 
 
@@ -550,7 +550,7 @@ abstract class AbstractRenderer
      */
     protected function _border_dashed($x, $y, $length, $color, $widths, $side, $corner_style = "bevel", $r1 = 0, $r2 = 0)
     {
-        $this->_border_line($x, $y, $length, $color, $widths, $side, $corner_style, "dashed", $r1, $r2);
+        $this->_border_line($x, $y, $length, $color, $widths, $side, "dashed", $corner_style, $r1, $r2);
     }
 
 
@@ -570,7 +570,7 @@ abstract class AbstractRenderer
         // TODO: Solve rendering where one corner is beveled (radius == 0), one corner isn't.
         if ($corner_style !== "bevel" || $r1 > 0 || $r2 > 0) {
             // do it the simple way
-            $this->_border_line($x, $y, $length, $color, $widths, $side, $corner_style, "solid", $r1, $r2);
+            $this->_border_line($x, $y, $length, $color, $widths, $side, "solid", $corner_style, $r1, $r2);
             return;
         }
 
@@ -845,7 +845,7 @@ abstract class AbstractRenderer
      *
      * @var $top
      */
-    protected function _border_line($x, $y, $length, $color, $widths, $side, $corner_style = "bevel", $pattern_name, $r1 = 0, $r2 = 0)
+    protected function _border_line($x, $y, $length, $color, $widths, $side, $pattern_name, $corner_style = "bevel", $r1 = 0, $r2 = 0)
     {
         /** used by $$side */
         list($top, $right, $bottom, $left) = $widths;

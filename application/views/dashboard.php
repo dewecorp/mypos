@@ -89,15 +89,17 @@
                 <h3 class="card-title">Aktivitas User (24 jam)</h3>
               </div>
               <div class="card-body">
+                <div style="max-height: 420px; overflow-y: auto;">
                 <div class="timeline timeline-inverse">
-                  <?php foreach($activities as $act) { ?>
+                  <?php $lastDate = null; foreach($activities as $act) { $curDate = format_tz($act->created_at, 'Asia/Jakarta', 'Y-m-d'); if ($curDate !== $lastDate) { ?>
                   <div class="time-label">
-                    <span class="bg-primary"><?=time_ago($act->created_at)?></span>
+                    <span class="bg-primary"><?=$curDate?></span>
                   </div>
+                  <?php $lastDate = $curDate; } ?>
                   <div>
                     <i class="fas fa-user bg-blue"></i>
                     <div class="timeline-item">
-                      <span class="time"><i class="far fa-clock"></i> <?=format_tz($act->created_at, 'Asia/Jakarta', 'Y-m-d H:i:s')?></span>
+                      <span class="time"><i class="far fa-clock"></i> <?=format_tz($act->created_at, 'Asia/Jakarta', 'Y-m-d H:i:s')?> (<?=time_ago($act->created_at)?>)</span>
                       <h3 class="timeline-header"><a href="#"><?=$act->user_name ?: 'System'?></a> <?=$act->type?> <?=$act->entity?></h3>
                       <?php if(!empty($act->message)) { ?>
                       <div class="timeline-body"><?=$act->message?></div>
@@ -105,6 +107,7 @@
                     </div>
                   </div>
                   <?php } ?>
+                </div>
                 </div>
               </div>
             </div>
