@@ -60,7 +60,7 @@
                                 <a href="<?=site_url('unit/edit/'.$data->unit_id)?>" class="btn btn-primary btn-xs">
                                         <i class="fa fa-edit"></i> Edit
                                 </a>
-                                <a href="<?=site_url('unit/del/'.$data->unit_id)?>" onclick="return confirm('Yakin Menghapus Data?')" class="btn btn-danger btn-xs">
+                                <a href="<?=site_url('unit/del/'.$data->unit_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus satuan ini?">
                                         <i class="fa fa-trash"></i> Hapus
                                 </a>
                             </td>

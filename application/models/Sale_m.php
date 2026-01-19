@@ -67,5 +67,54 @@ class Sale_m extends CI_Model {
         return $this->db->get();
     }
 
+    public function get_sales_older_than($date)
+    {
+        $this->db->select('sale_id, invoice, date');
+        $this->db->from('t_sale');
+        $this->db->where('date <', $date);
+        return $this->db->get();
+    }
+
+    public function sum_final_by_date($date)
+    {
+        $this->db->select_sum('final_price', 'total');
+        $this->db->from('t_sale');
+        $this->db->where('date', $date);
+        $q = $this->db->get();
+        $row = $q->row();
+        return (int)($row ? $row->total : 0);
+    }
+
+    public function sum_final_by_period($start, $end)
+    {
+        $this->db->select_sum('final_price', 'total');
+        $this->db->from('t_sale');
+        $this->db->where('date >=', $start);
+        $this->db->where('date <=', $end);
+        $q = $this->db->get();
+        $row = $q->row();
+        return (int)($row ? $row->total : 0);
+    }
+
+    public function sum_final_total()
+    {
+        $this->db->select_sum('final_price', 'total');
+        $this->db->from('t_sale');
+        $q = $this->db->get();
+        $row = $q->row();
+        return (int)($row ? $row->total : 0);
+    }
+
+    public function get_daily_totals_last_days($days = 30)
+    {
+        $start = date('Y-m-d', strtotime("-{$days} days"));
+        $this->db->select('date, SUM(final_price) as total');
+        $this->db->from('t_sale');
+        $this->db->where('date >=', $start);
+        $this->db->group_by('date');
+        $this->db->order_by('date', 'asc');
+        return $this->db->get();
+    }
+
 }
 

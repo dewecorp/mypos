@@ -26,6 +26,7 @@
 
     <!-- Main content -->
     <section class="content">
+    <?php $this->view('messages') ?>
         <div class="box">
                 <div class="float-right">
                     <a href="<?=site_url('supplier/add')?>" class="btn btn-primary btn-sm">
@@ -60,10 +61,7 @@
                                 <a href="<?=site_url('supplier/edit/'.$data->supplier_id)?>" class="btn btn-primary btn-xs">
                                         <i class="fa fa-edit"></i> Edit
                                 </a>
-                                <!-- <a href="<?=site_url('supplier/del/'.$data->supplier_id)?>" onclick="return confirm('Yakin Menghapus Data?')" class="btn btn-danger btn-xs">
-                                        <i class="fa fa-trash"></i> Hapus
-                                </a>   -->
-                                <a href="#modalDelete" data-toggle="modal" onclick="$('modalDelete #formDelete').attr('action'. '<?=site_url('supplier/del/'.$data->supplier_id)?>')" class="btn btn-danger btn-xs">
+                                <a href="<?=site_url('supplier/del/'.$data->supplier_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus supplier ini?">
                                         <i class="fa fa-trash"></i> Hapus
                                 </a>
                             </td>
@@ -78,22 +76,5 @@
         </div>
     </section>
 
-    <div class="modal fade" id="modalDelete">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Yakin Akan Menghapus Data Ini?</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-footer">
-                <form id="formDelete" action="" method="post">
-                  <button class="btn btn-default" data-dismiss="modal">Tidak</button>
-                  <button class="btn btn-danger" type="submit">Hapus</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+ 
 </html>

@@ -78,22 +78,7 @@
             </a>
           </li>
         <li class="nav-header">MENU UTAMA</li>
-          <li class="nav-item has-treeview">
-            <a href="<?=site_url('supplier')?>" class="nav-link">
-              <i class="nav-icon fas fa-truck"></i>
-              <p>
-                Suppliers
-              </p>
-            </a>
-          </li>
-          <li class="nav-item has-treeview">
-            <a href="<?=site_url('customer')?>" class="nav-link">
-              <i class="nav-icon fas fa-users"></i>
-              <p>
-                Customers
-              </p>
-            </a>
-          </li>
+          
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-archive"></i>
@@ -243,6 +228,34 @@
       "info": true,
       "autoWidth": true,
       "responsive": true,
+    });
+  });
+  $(document).on('click', 'a.swal-delete-link', function(e){
+    e.preventDefault();
+    var href = $(this).attr('href');
+    var title = $(this).data('title') || 'Yakin menghapus data ini?';
+    Swal.fire({
+      title: title,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, hapus',
+      cancelButtonText: 'Batal'
+    }).then(function(res){
+      if(res.isConfirmed) { window.location = href; }
+    });
+  });
+  $(document).on('submit', 'form.swal-delete-form', function(e){
+    e.preventDefault();
+    var $form = $(this);
+    var title = $form.data('title') || 'Yakin menghapus data ini?';
+    Swal.fire({
+      title: title,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, hapus',
+      cancelButtonText: 'Batal'
+    }).then(function(res){
+      if(res.isConfirmed) { $form.off('submit').submit(); }
     });
   });
 </script>

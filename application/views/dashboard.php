@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>myPOS | <?php echo date('Y') ?></title>
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <div class="container-fluid">
@@ -43,48 +34,115 @@
           </div>
           <!-- ./col -->
           <div class="col-lg-3 col-6">
-            <!-- small box -->
             <div class="small-box bg-success">
               <div class="inner">
-                <h3><?=$this->fungsi->count_supplier()?></h3>
-                <p>Suppliers</p>
+                <h3><?=number_format($today_income, 0, ",", ".")?></h3>
+                <p>Pendapatan Hari Ini</p>
               </div>
               <div class="icon">
-                <i class="fas fa-truck"></i>
+                <i class="fas fa-money-bill-wave"></i>
               </div>
-              <a href="<?=site_url('supplier')?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
           <div class="col-lg-3 col-6">
-            <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner">
-                <h3><?=$this->fungsi->count_customer()?></h3>
-                <p>Customers</p>
+                <h3><?=number_format($month_income, 0, ",", ".")?></h3>
+                <p>Pendapatan Bulan Ini</p>
               </div>
               <div class="icon">
-                <i class="fas fa-users"></i>
+                <i class="fas fa-calendar-alt"></i>
               </div>
-              <a href="<?=site_url('customer')?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
           <div class="col-lg-3 col-6">
-            <!-- small box -->
             <div class="small-box bg-danger">
               <div class="inner">
-                <h3><?=$this->fungsi->count_user()?></h3>
-                <p>Users</p>
+                <h3><?=number_format($total_income, 0, ",", ".")?></h3>
+                <p>Total Pendapatan</p>
               </div>
               <div class="icon">
-                <i class="fas fa-user"></i>
+                <i class="fas fa-chart-line"></i>
               </div>
-              <a href="<?=site_url('user')?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
         </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Grafik Penjualan (30 hari)</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="salesChart" style="height:300px;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Aktivitas User (24 jam)</h3>
+              </div>
+              <div class="card-body">
+                <div class="timeline timeline-inverse">
+                  <?php foreach($activities as $act) { ?>
+                  <div class="time-label">
+                    <span class="bg-primary"><?=time_ago($act->created_at)?></span>
+                  </div>
+                  <div>
+                    <i class="fas fa-user bg-blue"></i>
+                    <div class="timeline-item">
+                      <span class="time"><i class="far fa-clock"></i> <?=format_tz($act->created_at, 'Asia/Jakarta', 'Y-m-d H:i:s')?></span>
+                      <h3 class="timeline-header"><a href="#"><?=$act->user_name ?: 'System'?></a> <?=$act->type?> <?=$act->entity?></h3>
+                      <?php if(!empty($act->message)) { ?>
+                      <div class="timeline-body"><?=$act->message?></div>
+                      <?php } ?>
+                    </div>
+                  </div>
+                  <?php } ?>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script>
+          window.addEventListener('load', function(){
+            if (window.Chart) {
+              var ctx = document.getElementById('salesChart').getContext('2d');
+              var labels = <?=json_encode($chart_labels)?>;
+              var values = <?=json_encode($chart_values)?>;
+              var optionsV2 = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { yAxes: [{ ticks: { beginAtZero: true } }] }
+              };
+              var optionsV3 = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+              };
+              var opts = (Chart.register ? optionsV3 : optionsV2);
+              new Chart(ctx, {
+                type: 'line',
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    label: 'Pendapatan',
+                    data: values,
+                    borderColor: 'rgba(60,141,188,1)',
+                    backgroundColor: 'rgba(60,141,188,0.2)',
+                    fill: true
+                  }]
+                },
+                options: opts
+              });
+            }
+          });
+        </script>
       </section>
       <!-- /.content -->
-    </html>

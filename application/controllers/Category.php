@@ -40,8 +40,8 @@ class category extends CI_Controller {
 			);
 			$this->template->load('template', 'product/category/category_form', $data);
 		} else {
-			echo "<script>alert('Data tidak ditemukan');";
-			echo "window.location='".site_url('category')."';</script>";
+			$this->session->set_flashdata('error', 'Data tidak ditemukan');
+			redirect('category');
 		}
 	}
 
@@ -50,8 +50,10 @@ class category extends CI_Controller {
 		$post = $this->input->post(null, TRUE);
 		if(isset($_POST['add'])) {
 			$this->category_m->add($post);
+			$this->fungsi->log_activity('create', 'category', null, 'Tambah kategori');
 		} else if(isset($_POST['edit'])) {
 			$this->category_m->edit($post);
+			$this->fungsi->log_activity('update', 'category', $post['id'], 'Edit kategori');
 		}
 		
 		if($this->db->affected_rows() > 0) {
@@ -63,6 +65,7 @@ class category extends CI_Controller {
 	public function del($id) 
 	{
 		$this->category_m->del($id);
+		$this->fungsi->log_activity('delete', 'category', $id, 'Hapus kategori');
 		if($this->db->affected_rows() > 0) {
             $this->session->set_flashdata('success', '<strong>Selamat,</strong> Data berhasil dihapus');
         }

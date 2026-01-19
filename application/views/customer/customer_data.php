@@ -26,6 +26,7 @@
 
     <!-- Main content -->
     <section class="content">
+        <?php $this->view('messages') ?>
         <div class="box">
             <!-- <div class="box-header">               
                 <h4 class="box-title">Data Pemasok Barang</h4>               
@@ -63,7 +64,7 @@
                                 <a href="<?=site_url('customer/edit/'.$data->customer_id)?>" class="btn btn-primary btn-xs">
                                         <i class="fa fa-edit"></i> Edit
                                 </a>  
-                                <a href="<?=site_url('customer/del/'.$data->customer_id)?>" onclick="return confirm('Yakin Menghapus Data?')" class="btn btn-danger btn-xs">
+                                <a href="<?=site_url('customer/del/'.$data->customer_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus customer ini?">
                                         <i class="fa fa-trash"></i> Hapus
                                 </a>                                   
                             </td>

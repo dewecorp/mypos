@@ -76,9 +76,9 @@ class User extends CI_Controller {
                 $data['row'] = $query->row();			
 			    $this->template->load('template', 'user/user_form_edit', $data);		
         } else {
-			echo "<script>alert('Data tidak ditemukan');";
-			echo "window.location='".site_url('user')."';</script>";
-		}
+            $this->session->set_flashdata('error', 'Data tidak ditemukan');
+            redirect('user');
+        }
 	} else {
            $post = $this->input->post(null, TRUE);
            $this->user_m->edit($post);

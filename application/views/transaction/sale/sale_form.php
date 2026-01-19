@@ -424,7 +424,6 @@
       $('#qty').val(1);
     } else {
       Swal.fire({title:'Silakan pilih barang terlebih dahulu', icon:'info', timer:1200, showConfirmButton:false});
-      $('#modal-item').modal('show');
     }
   });
   $(document).on('click', '.select-item', function(){

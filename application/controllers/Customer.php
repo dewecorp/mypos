@@ -43,8 +43,8 @@ class customer extends CI_Controller {
 			);
 			$this->template->load('template', 'customer/customer_form', $data);
 		} else {
-			echo "<script>alert('Data tidak ditemukan');";
-			echo "window.location='".site_url('customer')."';</script>";
+			$this->session->set_flashdata('error', 'Data tidak ditemukan');
+			redirect('customer');
 		}
 	}
 
@@ -53,23 +53,28 @@ class customer extends CI_Controller {
 		$post = $this->input->post(null, TRUE);
 		if(isset($_POST['add'])) {
 			$this->customer_m->add($post);
+			$this->fungsi->log_activity('create', 'customer', null, 'Tambah customer');
 		} else if(isset($_POST['edit'])) {
 			$this->customer_m->edit($post);
+			$this->fungsi->log_activity('update', 'customer', $post['id'], 'Edit customer');
 		}
 
 		if($this->db->affected_rows() > 0) {
-            echo "<script>alert('Selamat, Data berhasil disimpan');</script>";
+            $this->session->set_flashdata('success', 'Data berhasil disimpan');
         }
-            echo "<script>window.location='".site_url('customer')."';</script>";
+        redirect('customer');
 	}
 
 	public function del($id)
 	{
 		$this->customer_m->del($id);
 		if($this->db->affected_rows() > 0) {
-            echo "<script>alert('<strong>Selamat,</strong> Data berhasil dihapus');</script>";
+            $this->session->set_flashdata('success', 'Data berhasil dihapus');
+            $this->fungsi->log_activity('delete', 'customer', $id, 'Hapus customer');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menghapus data');
         }
-            echo "<script>window.location='".site_url('customer')."';</script>";
+        redirect('customer');
 
 	}
 }

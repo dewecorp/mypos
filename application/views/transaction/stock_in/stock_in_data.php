@@ -65,7 +65,7 @@
                                   data-date="<?=$data->date?>">
                                         <i class="fa fa-eye"></i> Detail
                                 </a>
-                                <a href="<?=site_url('stock/in/del/'.$data->stock_id.'/'.$data->item_id)?>" onclick="return confirm('Yakin Menghapus Data?')" class="btn btn-danger btn-xs">
+                                <a href="<?=site_url('stock/in/del/'.$data->stock_id.'/'.$data->item_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus data Stock In?">
                                         <i class="fa fa-trash"></i> Hapus
                                 </a>
                             </td>

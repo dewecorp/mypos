@@ -66,8 +66,8 @@ class item extends CI_Controller {
 			);
 			$this->template->load('template', 'product/item/item_form', $data);
 		} else {
-			echo "<script>alert('Data tidak ditemukan');";
-			echo "window.location='".site_url('item')."';</script>";
+			$this->session->set_flashdata('error', 'Data tidak ditemukan');
+			redirect('item');
 		}
 	}
 
@@ -89,6 +89,7 @@ class item extends CI_Controller {
 					if($this->upload->do_upload('image')) {
 						$post['image'] = $this->upload->data('file_name');
 						$this->item_m->add($post);
+						$this->fungsi->log_activity('create', 'item', null, 'Tambah barang');
 						if($this->db->affected_rows() > 0) {
 							$this->session->set_flashdata('success', '<strong>Selamat,</strong> Data berhasil disimpan');
 						}
@@ -101,6 +102,7 @@ class item extends CI_Controller {
 			} else {
 				$post['image'] = null;
 				$this->item_m->add($post);
+				$this->fungsi->log_activity('create', 'item', null, 'Tambah barang');
 				if($this->db->affected_rows() > 0) {
 					$this->session->set_flashdata('success', '<strong>Selamat,</strong> Data berhasil disimpan');
 				}
@@ -123,6 +125,7 @@ class item extends CI_Controller {
 							}
 							$post['image'] = $this->upload->data('file_name');
 							$this->item_m->edit($post);
+							$this->fungsi->log_activity('update', 'item', $post['id'], 'Edit barang');
 							if($this->db->affected_rows() > 0) {
 								$this->session->set_flashdata('success', '<strong>Selamat,</strong> Data berhasil disimpan');
 							}
@@ -135,6 +138,7 @@ class item extends CI_Controller {
 				} else {
 					$post['image'] = null;
 					$this->item_m->edit($post);
+					$this->fungsi->log_activity('update', 'item', $post['id'], 'Edit barang');
 					if($this->db->affected_rows() > 0) {
 						$this->session->set_flashdata('success', '<strong>Selamat,</strong> Data berhasil disimpan');
 					}
@@ -154,6 +158,7 @@ class item extends CI_Controller {
 			unlink($target_file);
 		}
 		$this->item_m->del($id);
+		$this->fungsi->log_activity('delete', 'item', $id, 'Hapus barang');
 		if($this->db->affected_rows() > 0) {
             $this->session->set_flashdata('success', '<strong>Selamat,</strong> Data berhasil dihapus');
         }

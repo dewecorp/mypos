@@ -22,6 +22,7 @@ function check_admin() {
     if($ci->fungsi->user_login()->level != 1) {
         redirect('dashboard');
     }
+}
 
 function indo_currency($nominal) {
     $result = "RP " . number_format($nominal, 2, '.', '.') ;
@@ -35,4 +36,27 @@ function indo_date($date) {
     return $d.'/'.$m.'/'.$y;
     }
 
+function time_ago($datetime, $timezone = 'Asia/Jakarta') {
+    date_default_timezone_set($timezone);
+    $ts = is_numeric($datetime) ? (int)$datetime : strtotime($datetime);
+    $diff = time() - $ts;
+    if($diff < 60) return $diff.' detik lalu';
+    $diff = floor($diff/60);
+    if($diff < 60) return $diff.' menit lalu';
+    $diff = floor($diff/60);
+    if($diff < 24) return $diff.' jam lalu';
+    $diff = floor($diff/24);
+    return $diff.' hari lalu';
+}
+
+function format_tz($datetime, $timezone = 'Asia/Jakarta', $format = 'Y-m-d H:i:s') {
+    $tz = new DateTimeZone($timezone);
+    if (is_numeric($datetime)) {
+        $dt = new DateTime('@'.$datetime);
+        $dt->setTimezone($tz);
+    } else {
+        $dt = new DateTime($datetime);
+        $dt->setTimezone($tz);
+    }
+    return $dt->format($format);
 }

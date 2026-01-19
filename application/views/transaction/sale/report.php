@@ -55,7 +55,7 @@
             <td><?=$r->final_price?></td>
             <td>
               <a class="btn btn-sm btn-info" href="<?=site_url('sale/invoice/'.$r->sale_id)?>">Detail</a>
-              <button type="button" class="btn btn-sm btn-danger btn-delete" data-id="<?=$r->sale_id?>" data-invoice="<?=$r->invoice?>">Hapus</button>
+              <a href="<?=site_url('sale/delete/'.$r->sale_id)?>" class="btn btn-sm btn-danger swal-delete-link" data-title="Hapus transaksi <?=$r->invoice?>?">Hapus</a>
             </td>
           </tr>
           <?php } ?>
@@ -95,11 +95,10 @@
     }).then(function(res){
       if(res.isConfirmed) {
         $.ajax({
-          url: '<?=site_url('sale/delete_bulk')?>',
+          url: '<?=site_url('sale/delete_one')?>',
           method: 'POST',
-          data: { ids: [id] },
+          data: { id: id },
           dataType: 'json',
-          traditional: true,
           success: function(r){
             if(r && r.success) {
               Swal.fire({title:'Berhasil dihapus', icon:'success', timer:1200, showConfirmButton:false}).then(function(){ location.reload(); });

@@ -76,7 +76,7 @@
                             <td class="text-center" width="160px">
                                 <a href="<?=site_url('item/edit/'.$data->item_id)?>" class="btn btn-primary btn-xs">
                                         <i class="fa fa-edit"></i> Edit</a>
-                                <a href="<?=site_url('item/del/'.$data->item_id)?>" onclick="return confirm('Yakin Menghapus Data?')" class="btn btn-danger btn-xs">
+                                <a href="<?=site_url('item/del/'.$data->item_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus barang ini?">
                                         <i class="fa fa-trash"></i> Hapus</a>
                             </td>
                         </tr>

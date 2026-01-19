@@ -7,8 +7,13 @@
 </head>
 <body>
     
-    <img src="uploads/qr-code/item-<?=$row->barcode?>.png" style="width: 200px;">
+    <?php $barcode = isset($row->barcode) ? trim((string)$row->barcode) : ''; ?>
+    <?php if ($barcode === '') { ?>
+        <span style="color:#dc3545;">QR Code tidak tersedia</span>
+    <?php } else { ?>
+        <img src="uploads/qr-code/item-<?=$barcode?>.png" style="width: 200px;">
+    <?php } ?>
     <br>
-    <?=$row->barcode?>
+    <?=$barcode?>
 </body>
 </html>

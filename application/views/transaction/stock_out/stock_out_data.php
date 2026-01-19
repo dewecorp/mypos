@@ -59,7 +59,7 @@
                             <td><?=$data->detail?></td>
                             <td class="text-center"><?=$data->date?></td>
                             <td class="text-center" width="160px">                              
-                                <a href="<?=site_url('stock/out/del/'.$data->stock_id.'/'.$data->item_id)?>" onclick="return confirm('Yakin Menghapus Data?')" class="btn btn-danger btn-xs">
+                                <a href="<?=site_url('stock/out/del/'.$data->stock_id.'/'.$data->item_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus data Stock Out?">
                                         <i class="fa fa-trash"></i> Hapus
                                 </a>                                   
                             </td>

@@ -40,8 +40,8 @@ class unit extends CI_Controller {
 			);
 			$this->template->load('template', 'product/unit/unit_form', $data);
 		} else {
-			echo "<script>alert('Data tidak ditemukan');";
-			echo "window.location='".site_url('unit')."';</script>";
+			$this->session->set_flashdata('error', 'Data tidak ditemukan');
+			redirect('unit');
 		}
 	}
 
@@ -50,8 +50,10 @@ class unit extends CI_Controller {
 		$post = $this->input->post(null, TRUE);
 		if(isset($_POST['add'])) {
 			$this->unit_m->add($post);
+			$this->fungsi->log_activity('create', 'unit', null, 'Tambah satuan');
 		} else if(isset($_POST['edit'])) {
 			$this->unit_m->edit($post);
+			$this->fungsi->log_activity('update', 'unit', $post['id'], 'Edit satuan');
 		}
 		
 		if($this->db->affected_rows() > 0) {
@@ -63,6 +65,7 @@ class unit extends CI_Controller {
 	public function del($id) 
 	{
 		$this->unit_m->del($id);
+		$this->fungsi->log_activity('delete', 'unit', $id, 'Hapus satuan');
 		if($this->db->affected_rows() > 0) {
             $this->session->set_flashdata('success', '<strong>Selamat,</strong> Data berhasil dihapus');
         }

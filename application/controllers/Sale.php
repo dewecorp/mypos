@@ -109,6 +109,7 @@ class Sale extends CI_Controller {
 			$this->output
 				->set_content_type('application/json')
 				->set_output(json_encode(['success' => true, 'sale_id' => $sale_id, 'invoice' => $header['invoice']]));
+			$this->fungsi->log_activity('create', 'sale', $sale_id, 'Transaksi '.$header['invoice']);
 		} else {
 			$this->output
 				->set_content_type('application/json')
@@ -146,6 +147,7 @@ class Sale extends CI_Controller {
 		$this->db->trans_complete();
 		if($this->db->trans_status()) {
 			$this->session->set_flashdata('success', 'Transaksi dihapus');
+			$this->fungsi->log_activity('delete', 'sale', $sale_id, 'Hapus transaksi '.$header->invoice);
 		} else {
 			$this->session->set_flashdata('error', 'Gagal menghapus transaksi');
 		}
@@ -181,11 +183,65 @@ class Sale extends CI_Controller {
 			$this->stock_m->delete_by_detail('sale '.$header->invoice);
 			$this->db->where('sale_id', $sale_id)->delete('t_sale_detail');
 			$this->db->where('sale_id', $sale_id)->delete('t_sale');
-			if($this->db->affected_rows() > 0) { $deleted++; }
+			$deleted++;
 		}
 		$this->db->trans_complete();
 		$ok = $this->db->trans_status() && $deleted > 0;
 		$response = $ok ? ['success' => true, 'deleted' => $deleted] : ['success' => false, 'message' => 'Tidak ada data dihapus'];
+		if($ok) { $this->fungsi->log_activity('delete', 'sale', null, 'Hapus '.$deleted.' transaksi'); }
 		$this->output->set_content_type('application/json')->set_output(json_encode($response));
+	}
+
+	public function delete_one()
+	{
+		$id = (int)$this->input->post('id');
+		if(!$id) {
+			$this->output->set_content_type('application/json')->set_output(json_encode(['success' => false, 'message' => 'ID tidak valid']));
+			return;
+		}
+		$header = $this->sale_m->get_sale($id)->row();
+		if(!$header) {
+			$this->output->set_content_type('application/json')->set_output(json_encode(['success' => false, 'message' => 'Data tidak ditemukan']));
+			return;
+		}
+		$details = $this->sale_m->get_sale_details($id)->result();
+		$this->db->trans_start();
+		foreach($details as $d) {
+			$this->item_m->update_stock_in(['item_id' => $d->item_id, 'qty' => $d->qty]);
+		}
+		$this->stock_m->delete_by_detail('sale '.$header->invoice);
+		$this->db->where('sale_id', $id)->delete('t_sale_detail');
+		$this->db->where('sale_id', $id)->delete('t_sale');
+		$this->db->trans_complete();
+		$ok = $this->db->trans_status();
+		$this->output->set_content_type('application/json')->set_output(json_encode($ok ? ['success' => true] : ['success' => false, 'message' => 'Gagal menghapus']));
+	}
+
+	public function purge_older_than_days($days = 30)
+	{
+		$days = (int)$days;
+		if($days <= 0) $days = 30;
+		$cutoff = date('Y-m-d', strtotime("-{$days} days"));
+
+		$this->db->trans_start();
+		$sales = $this->sale_m->get_sales_older_than($cutoff)->result();
+		foreach($sales as $row) {
+			$this->stock_m->delete_by_detail('sale '.$row->invoice);
+			$this->db->where('sale_id', $row->sale_id)->delete('t_sale_detail');
+			$this->db->where('sale_id', $row->sale_id)->delete('t_sale');
+		}
+		$this->stock_m->delete_older_than($cutoff);
+		$this->db->trans_complete();
+
+		if($this->input->is_ajax_request()) {
+			$this->output->set_content_type('application/json')->set_output(json_encode(['success' => $this->db->trans_status(), 'cutoff' => $cutoff, 'deleted_sales' => count($sales)]));
+			return;
+		}
+		if($this->db->trans_status()) {
+			$this->session->set_flashdata('success', 'Data transaksi dan stok lebih lama dari '.$days.' hari telah dihapus');
+		} else {
+			$this->session->set_flashdata('error', 'Gagal menghapus data lama');
+		}
+		redirect('sale/report');
 	}
 }

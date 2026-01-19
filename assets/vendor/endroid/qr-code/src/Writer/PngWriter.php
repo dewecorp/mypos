@@ -66,7 +66,7 @@ class PngWriter extends AbstractWriter
     {
         $image = imagecreatetruecolor($data['block_count'] * $baseSize, $data['block_count'] * $baseSize);
 
-        if (!is_resource($image)) {
+        if (!$image) {
             throw new GenerateImageException('Unable to generate image: check your GD installation');
         }
 
@@ -89,7 +89,7 @@ class PngWriter extends AbstractWriter
     {
         $image = imagecreatetruecolor($data['outer_width'], $data['outer_height']);
 
-        if (!is_resource($image)) {
+        if (!$image) {
             throw new GenerateImageException('Unable to generate image: check your GD installation');
         }
 

@@ -87,4 +87,10 @@ class Stock_m extends CI_Model {
     return $this->db->get();
   }
 
+  public function delete_older_than($date)
+  {
+    $this->db->where('date <', $date);
+    $this->db->delete('t_stock');
+  }
+
 }

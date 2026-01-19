@@ -42,13 +42,18 @@
                     <div class="col-md-4"> 
                         <?php
 
-                          $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                          echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($row->barcode, $generator::TYPE_CODE_128)) . '" style="width:200px;">';
+                          $barcode = isset($row->barcode) ? trim((string)$row->barcode) : '';
+                          if ($barcode === '') {
+                              echo '<span class="text-danger">Barcode tidak tersedia</span>';
+                          } else {
+                              $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
+                              echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($barcode, $generator::TYPE_CODE_128_B)) . '" style="width:200px;">';
+                          }
                         ?>
                         <br>
-                        <?=$row->barcode?>
+                        <?=$barcode?>
                         <br><br>
-                        <a href="<?=site_url('item/barcode_print/'.$row->item_id)?>" target="_blank" class="btn btn-info btn-sm">
+                        <a href="<?=site_url('item/barcode_print/'.$row->item_id)?>" target="_blank" class="btn btn-info btn-sm" <?=($barcode === '' ? 'disabled' : '')?>>
                         <i class="fa fa-print"></i> Print
                         </a>
                     </div>
@@ -64,14 +69,21 @@
                     <div class="col-md-4"> 
                         <?php
 
-                        $qrCode = new Endroid\QrCode\QrCode($row->barcode);
-                        $qrCode->writeFile('uploads/qr-code/item-'.$row->barcode.'.png');
+                        $barcode = isset($row->barcode) ? trim((string)$row->barcode) : '';
+                        if ($barcode === '') {
+                            echo '<span class="text-danger">QR Code tidak tersedia</span>';
+                        } else {
+                            $qrCode = new Endroid\QrCode\QrCode($barcode);
+                            $qrCode->writeFile('uploads/qr-code/item-'.$barcode.'.png');
+                        }
                         ?>
-                        <img src="<?=base_url('uploads/qr-code/item-'.$row->barcode.'.png')?>" style="width: 200px;">
+                        <?php if ($barcode !== '') { ?>
+                        <img src="<?=base_url('uploads/qr-code/item-'.$barcode.'.png')?>" style="width: 200px;">
+                        <?php } ?>
                         <br>
-                        <?=$row->barcode?>
+                        <?=$barcode?>
                         <br><br>
-                        <a href="<?=site_url('item/qrcode_print/'.$row->item_id)?>" target="_blank" class="btn btn-info btn-sm">
+                        <a href="<?=site_url('item/qrcode_print/'.$row->item_id)?>" target="_blank" class="btn btn-info btn-sm" <?=($barcode === '' ? 'disabled' : '')?>>
                         <i class="fa fa-print"></i> Print
                         </a>
                         <br><br>

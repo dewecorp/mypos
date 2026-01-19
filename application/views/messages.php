@@ -1,12 +1,20 @@
-<?php if ($this->session->has_userdata('success')) { ?>
-<div class="alert alert-success alert-dismissible">
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-      <i class="icon fa fa-check"></i><?=$this->session->flashdata('success');?>
-</div>
+<?php $success = $this->session->flashdata('success'); if (!empty($success)) { ?>
+<script>
+  window.addEventListener('load', function(){
+    if(window.Swal){
+      Swal.fire({title:'Berhasil', html:'<?=addslashes($success)?>', icon:'success', timer:1500, showConfirmButton:false});
+    }
+  });
+  </script>
+<?php $this->session->unset_userdata('success'); if(isset($_SESSION['__ci_vars']['success'])) { unset($_SESSION['__ci_vars']['success']); } ?>
 <?php } ?>
-<?php if ($this->session->has_userdata('error')) { ?>
-<div class="alert alert-danger alert-dismissible">
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-      <i class="icon fa fa-ban"></i> <?=strip_tags(str_replace('</p>', '', $this->session->flashdata('error')));?>
-</div>
+<?php $error = $this->session->flashdata('error'); if (!empty($error)) { ?>
+<script>
+  window.addEventListener('load', function(){
+    if(window.Swal){
+      Swal.fire({title:'Gagal', html:'<?=addslashes(strip_tags(str_replace('</p>', '', $error)))?>', icon:'error'});
+    }
+  });
+</script>
+<?php $this->session->unset_userdata('error'); if(isset($_SESSION['__ci_vars']['error'])) { unset($_SESSION['__ci_vars']['error']); } ?>
 <?php } ?>

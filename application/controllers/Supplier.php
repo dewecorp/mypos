@@ -43,8 +43,8 @@ class Supplier extends CI_Controller {
 			);
 			$this->template->load('template', 'supplier/supplier_form', $data);
 		} else {
-			echo "<script>alert('Data tidak ditemukan');";
-			echo "window.location='".site_url('user')."';</script>";
+			$this->session->set_flashdata('error', 'Data tidak ditemukan');
+			redirect('supplier');
 		}
 	}
 
@@ -53,14 +53,16 @@ class Supplier extends CI_Controller {
 		$post = $this->input->post(null, TRUE);
 		if(isset($_POST['add'])) {
 			$this->supplier_m->add($post);
+			$this->fungsi->log_activity('create', 'supplier', null, 'Tambah supplier');
 		} else if(isset($_POST['edit'])) {
 			$this->supplier_m->edit($post);
+			$this->fungsi->log_activity('update', 'supplier', $post['id'], 'Edit supplier');
 		}
 		
 		if($this->db->affected_rows() > 0) {
-            echo "<script>alert('Data berhasil disimpan');</script>";
+            $this->session->set_flashdata('success', 'Data berhasil disimpan');
         }
-            echo "<script>window.location='".site_url('supplier')."';</script>";
+        redirect('supplier');
 	}
 
 	public function del($id) 
@@ -68,12 +70,13 @@ class Supplier extends CI_Controller {
 		$this->supplier_m->del($id);
 		$error = $this->db->error();
 		if($error['code'] != 0) {
-			echo "<script>alert('Data tidak dapat dihapus (sudah berelasi)');</script>";
+			$this->session->set_flashdata('error', 'Data tidak dapat dihapus (sudah berelasi)');
 		}
 		else {
-            echo "<script>alert('Data berhasil dihapus');</script>";
+            $this->session->set_flashdata('success', 'Data berhasil dihapus');
+            $this->fungsi->log_activity('delete', 'supplier', $id, 'Hapus supplier');
         }
-            echo "<script>window.location='".site_url('supplier')."';</script>";
+        redirect('supplier');
 
 	}
 }

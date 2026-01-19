@@ -55,7 +55,7 @@
                                 <a href="<?=site_url('category/edit/'.$data->category_id)?>" class="btn btn-primary btn-xs">
                                         <i class="fa fa-edit"></i> Edit
                                 </a>  
-                                <a href="<?=site_url('category/del/'.$data->category_id)?>" onclick="return confirm('Yakin Menghapus Data?')" class="btn btn-danger btn-xs">
+                                <a href="<?=site_url('category/del/'.$data->category_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus kategori ini?">
                                         <i class="fa fa-trash"></i> Hapus
                                 </a>                                   
                             </td>
