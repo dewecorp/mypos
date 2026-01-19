@@ -94,12 +94,28 @@
       cancelButtonText: 'Batal'
     }).then(function(res){
       if(res.isConfirmed) {
-        window.location = '<?=site_url('sale/delete/')?>'+id;
+        $.ajax({
+          url: '<?=site_url('sale/delete_bulk')?>',
+          method: 'POST',
+          data: { ids: [id] },
+          dataType: 'json',
+          traditional: true,
+          success: function(r){
+            if(r && r.success) {
+              Swal.fire({title:'Berhasil dihapus', icon:'success', timer:1200, showConfirmButton:false}).then(function(){ location.reload(); });
+            } else {
+              Swal.fire({title:(r && r.message ? r.message : 'Gagal menghapus'), icon:'error'});
+            }
+          },
+          error: function(){
+            Swal.fire({title:'Gagal menghapus', icon:'error'});
+          }
+        });
       }
     });
   });
   $('#delete_selected').on('click', function(){
-    var ids = $('.row_check:checked').map(function(){ return $(this).val(); }).get();
+    var ids = $('.row_check:checked').map(function(){ return parseInt($(this).val()); }).get();
     if(ids.length === 0) {
       Swal.fire({title:'Tidak ada data dipilih', icon:'info', timer:1500, showConfirmButton:false});
       return;
@@ -112,12 +128,20 @@
       cancelButtonText: 'Batal'
     }).then(function(res){
       if(res.isConfirmed) {
-        $.post('<?=site_url('sale/delete_bulk')?>', {ids: ids.join(',')}, function(resp){
-          var r;
-          try { r = JSON.parse(resp); } catch(e) { r = {success:false}; }
-          if(r.success) {
-            Swal.fire({title:'Berhasil dihapus', icon:'success', timer:1500, showConfirmButton:false}).then(function(){ location.reload(); });
-          } else {
+        $.ajax({
+          url: '<?=site_url('sale/delete_bulk')?>',
+          method: 'POST',
+          data: { ids: ids },
+          dataType: 'json',
+          traditional: true,
+          success: function(r){
+            if(r && r.success) {
+              Swal.fire({title:'Berhasil dihapus', icon:'success', timer:1500, showConfirmButton:false}).then(function(){ location.reload(); });
+            } else {
+              Swal.fire({title:(r && r.message ? r.message : 'Gagal menghapus'), icon:'error'});
+            }
+          },
+          error: function(){
             Swal.fire({title:'Gagal menghapus', icon:'error'});
           }
         });

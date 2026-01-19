@@ -253,6 +253,9 @@
              <button id="cancel_payment" class="btn btn-warning">
                <i class="fa fa-ban"></i> Cancel Payment
              </button><br><br>
+             <button id="reset_transaction" class="btn btn-secondary">
+               <i class="fa fa-refresh"></i> Reset Transaction
+             </button><br><br>
              <button id="process_payment" class="btn btn-success">
                <i class="fa fa-paper-plane"></i> Process Payment
              </button>
@@ -334,7 +337,10 @@
     } else {
       var subTotal = 0;
       cart.forEach(function(it, idx) {
-        subTotal += it.total;
+        var rowTotal = (parseInt(it.price) * parseInt(it.qty)) - parseInt(it.discount || 0);
+        if(rowTotal < 0) rowTotal = 0;
+        it.total = rowTotal;
+        subTotal += rowTotal;
         var row = '<tr>'+
           '<td>'+(idx+1)+'</td>'+
           '<td>'+it.barcode+'</td>'+
@@ -342,7 +348,7 @@
           '<td>'+it.price+'</td>'+
           '<td>'+it.qty+'</td>'+
           '<td>'+it.discount+'</td>'+
-          '<td>'+it.total+'</td>'+
+          '<td>'+rowTotal+'</td>'+
           '<td><button class="btn btn-danger btn-sm" data-index="'+idx+'" id="del_row">Hapus</button></td>'+
         '</tr>';
         tbody.append(row);
@@ -467,5 +473,20 @@
         Swal.fire({title:'Gagal memproses', icon:'error'});
       }
     });
+  });
+  $('#reset_transaction').on('click', function(){
+    cart = [];
+    $('#barcode').val('');
+    $('#item_id').val('');
+    $('#item_name').val('');
+    $('#price').val('');
+    $('#stock').val('');
+    $('#qty').val(1);
+    $('#discount').val(0);
+    $('#cash').val(0);
+    $('#Change').val(0);
+    $('#note').val('');
+    renderCart();
+    location.reload();
   });
 </script>

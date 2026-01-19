@@ -154,7 +154,9 @@ class Sale extends CI_Controller {
 
 	public function delete_bulk()
 	{
-		$ids = $this->input->post('ids', TRUE);
+		// Support ids sent as array ids[] or ids
+		$ids = $this->input->post('ids');
+		if($ids === NULL) { $ids = $this->input->post('ids[]'); }
 		if(is_string($ids)) { $ids = explode(',', $ids); }
 		if(!is_array($ids)) { $ids = []; }
 		$normalized = [];
@@ -163,6 +165,10 @@ class Sale extends CI_Controller {
 			$normalized[] = (int)$sid;
 		}
 		$ids = $normalized;
+		if(empty($ids)) {
+			$this->output->set_content_type('application/json')->set_output(json_encode(['success' => false, 'message' => 'IDs kosong']));
+			return;
+		}
 		$this->db->trans_start();
 		$deleted = 0;
 		foreach($ids as $sale_id) {

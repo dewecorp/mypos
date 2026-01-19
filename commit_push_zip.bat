@@ -1,5 +1,8 @@
 @echo off
 setlocal
 set SCRIPT_DIR=%~dp0
-powershell -ExecutionPolicy Bypass -File "%SCRIPT_DIR%tools\commit_push_zip.ps1" -Message "%~1" -Branch "%~2" -Remote "https://github.com/dewecorp/mypos"
+set PS1=%SCRIPT_DIR%tools\commit_push_zip.ps1
+set MSG=%~1
+set BR=%~2
+powershell -ExecutionPolicy Bypass -File "%PS1%" -Message "%MSG%" -Branch "%BR%" -Remote "https://github.com/dewecorp/mypos"
 endlocal
