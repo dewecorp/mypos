@@ -11,6 +11,14 @@ class Stock extends CI_Controller {
       
     }
 
+    public function report()
+    {
+        $start = $this->input->get('start', TRUE) ?: date('Y-m-01');
+        $end = $this->input->get('end', TRUE) ?: date('Y-m-d');
+        $rows = $this->stock_m->get_stock_by_period($start, $end)->result();
+        $this->template->load('template', 'transaction/stock/report', ['rows' => $rows, 'start' => $start, 'end' => $end]);
+    }
+
     public function stock_in_data() {
         $data['row'] = $this->stock_m->get_stock_in()->result();
         $this->template->load('template', 'transaction/stock_in/stock_in_data', $data);

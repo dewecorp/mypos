@@ -163,13 +163,13 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="../tables/simple.html" class="nav-link">
+                <a href="<?=site_url('sale/report')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Sales</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="../tables/data.html" class="nav-link">
+                <a href="<?=site_url('stock/report')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Stocks</p>
                 </a>

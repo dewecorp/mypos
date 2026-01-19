@@ -260,6 +260,24 @@
         </div>
       </div>
     </section>
+    <div class="modal fade" id="invoice_modal">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Invoice</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="height:75vh">
+            <iframe id="invoice_frame" src="" style="width:100%; height:100%; border:0;"></iframe>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
 <div class="modal fade" id="modal-item">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -357,12 +375,51 @@
         $('#price').val(res.price);
         $('#stock').val(res.stock);
       } else {
-        alert('Barcode tidak ditemukan');
+        Swal.fire({title:'Barcode tidak ditemukan', icon:'error'});
       }
     });
   });
   $('#add_cart').on('click', function(){
-    $('#modal-item').modal('show');
+    var item_id = $('#item_id').val();
+    if(item_id) {
+      var bc = $('#barcode').val();
+      var name = $('#item_name').val();
+      var price = parseInt($('#price').val() || 0);
+      var stock = parseInt($('#stock').val() || 0);
+      var qty = parseInt($('#qty').val() || 1);
+      if(qty > stock) { Swal.fire({title:'Stok tidak mencukupi', icon:'error'}); return; }
+      var discount = 0;
+      var total = (price * qty) - discount;
+      var existingIndex = cart.findIndex(function(c){ return c.item_id == item_id; });
+      if(existingIndex >= 0) {
+        var existing = cart[existingIndex];
+        var newQty = existing.qty + qty;
+        if(newQty > stock) { Swal.fire({title:'Stok tidak mencukupi', icon:'error'}); return; }
+        existing.qty = newQty;
+        existing.total = (existing.price * existing.qty) - existing.discount;
+        cart[existingIndex] = existing;
+      } else {
+        cart.push({
+          item_id: parseInt(item_id),
+          barcode: bc,
+          name: name,
+          price: price,
+          qty: qty,
+          discount: discount,
+          total: total
+        });
+      }
+      renderCart();
+      $('#barcode').val('');
+      $('#item_id').val('');
+      $('#item_name').val('');
+      $('#price').val('');
+      $('#stock').val('');
+      $('#qty').val(1);
+    } else {
+      Swal.fire({title:'Silakan pilih barang terlebih dahulu', icon:'info', timer:1200, showConfirmButton:false});
+      $('#modal-item').modal('show');
+    }
   });
   $(document).on('click', '.select-item', function(){
     var item_id = $(this).data('item_id');
@@ -370,24 +427,17 @@
     var bc = $(this).data('barcode');
     var price = parseInt($(this).data('price'));
     var stock = parseInt($(this).data('stock'));
-    var qty = parseInt($('#qty').val() || 1);
-    if(qty > stock) { alert('Stok tidak mencukupi'); return; }
-    var discount = 0;
-    var total = (price * qty) - discount;
-    cart.push({
-      item_id: item_id,
-      barcode: bc,
-      name: name,
-      price: price,
-      qty: qty,
-      discount: discount,
-      total: total
-    });
+    $('#barcode').val(bc);
+    $('#item_id').val(item_id);
+    $('#item_name').val(name);
+    $('#price').val(price);
+    $('#stock').val(stock);
+    $('#qty').val(1);
     $('#modal-item').modal('hide');
-    renderCart();
+    $('#qty').focus();
   });
   $('#process_payment').on('click', function(){
-    if(cart.length === 0) { alert('Tidak ada item'); return; }
+    if(cart.length === 0) { Swal.fire({title:'Tidak ada item', icon:'info'}); return; }
     var data = {
       invoice: $('#invoice').text(),
       date: $('#date').val(),
@@ -400,13 +450,21 @@
       note: $('#note').val(),
       items: JSON.stringify(cart)
     };
-    $.post('<?=site_url('sale/process')?>', data, function(resp){
-      try { var res = JSON.parse(resp); } catch(e) { alert('Gagal memproses'); return; }
-      if(res.success) {
-        alert('Transaksi berhasil. Invoice: '+res.invoice);
-        window.location = '<?=site_url('sale')?>';
-      } else {
-        alert(res.message || 'Gagal simpan transaksi');
+    $.ajax({
+      url: '<?=site_url('sale/process')?>',
+      method: 'POST',
+      data: data,
+      dataType: 'json',
+      success: function(res){
+        if(res && res.success) {
+          Swal.fire({title:'Transaksi berhasil', icon:'success', timer:1500, showConfirmButton:false});
+          window.open('<?=site_url('sale/invoice/')?>'+res.sale_id, '_blank');
+        } else {
+          Swal.fire({title:(res && res.message ? res.message : 'Gagal simpan transaksi'), icon:'error'});
+        }
+      },
+      error: function(){
+        Swal.fire({title:'Gagal memproses', icon:'error'});
       }
     });
   });
