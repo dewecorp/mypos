@@ -61,7 +61,7 @@ class Cache
     {
         self::$_dompdf = $dompdf;
         
-        $protocol = mb_strtolower($protocol);
+        $protocol = mb_strtolower((string)$protocol);
         $parsed_url = Helpers::explode_url($url);
         $message = null;
 

@@ -585,6 +585,10 @@ class Style
         $ret = 0;
         foreach ($length as $l) {
 
+            if ($l === null) {
+                continue;
+            }
+
             if ($l === "auto") {
                 return "auto";
             }
