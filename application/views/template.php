@@ -83,7 +83,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-archive"></i>
               <p>
-                Product
+                Produk
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -91,19 +91,19 @@
               <li class="nav-item">
                 <a href="<?=site_url('category')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Categories</p>
+                  <p>Kategori</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="<?=site_url('unit')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Units</p>
+                  <p>Satuan</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="<?=site_url('item')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Items</p>
+                  <p>Barang</p>
                 </a>
               </li>
             </ul>
@@ -112,7 +112,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-shopping-cart"></i>
               <p>
-                Transaction
+                Transaksi
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -120,19 +120,19 @@
               <li class="nav-item">
                 <a href="<?=site_url('sale')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Sales</p>
+                  <p>Penjualan</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="<?=site_url('stock/in')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Stock In</p>
+                  <p>Stok Masuk</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="<?=site_url('stock/out')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Stock Out</p>
+                  <p>Stok Keluar</p>
                 </a>
               </li>
             </ul>
@@ -142,7 +142,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-chart-pie"></i>
               <p>
-                Reports
+                Laporan
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -150,13 +150,13 @@
               <li class="nav-item">
                 <a href="<?=site_url('sale/report')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Sales</p>
+                  <p>Penjualan</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="<?=site_url('stock/report')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Stocks</p>
+                  <p>Stok</p>
                 </a>
               </li>
 
@@ -165,12 +165,12 @@
 
           <?php if ($this->fungsi->user_login()->level == 1) { ?>
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-header">SETTING</li>
+          <li class="nav-header">PENGATURAN</li>
           <li class="nav-item">
             <a href="<?=site_url('user')?>" class="nav-link">
               <i class="nav-icon fas fa-user"></i>
               <p>
-               Users
+               Pengguna
               </p>
             </a>
           </li>
@@ -230,6 +230,29 @@
       "responsive": true,
     });
   });
+
+  var flashSuccess = '<?=$this->session->flashdata('success')?>';
+  if(flashSuccess) {
+      Swal.fire({
+          icon: 'success',
+          title: 'Sukses',
+          text: flashSuccess,
+          showConfirmButton: false,
+          timer: 1500
+      })
+  }
+
+  var flashError = '<?=$this->session->flashdata('error')?>';
+  if(flashError) {
+      Swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: flashError,
+          showConfirmButton: false,
+          timer: 1500
+      })
+  }
+
   $(document).on('click', 'a.swal-delete-link', function(e){
     e.preventDefault();
     var href = $(this).attr('href');

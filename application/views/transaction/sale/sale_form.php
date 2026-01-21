@@ -12,7 +12,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h3>Transaction</h3>
+            <h3>Transaksi</h3>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -32,7 +32,7 @@
               <table width="100%">
                 <tr>
                   <td style="vertical-align:top">
-                    <label for="date">Date</label>
+                    <label for="date">Tanggal</label>
                   </td>
                   <td>
                   <div class="form-group">
@@ -52,7 +52,7 @@
                 </tr>
                 <tr>
                   <td style="vertical-align:top">
-                    <label for="customer">Customer</label>
+                    <label for="customer">Pelanggan</label>
                   </td>
                   <td>
                     <div >
@@ -95,7 +95,7 @@
                 </tr>
                 <tr>
                   <td style="vertical-align:top">
-                    <label for="qty">Qty</label>
+                    <label for="qty">Jml</label>
                   </td>
                   <td>
                     <div class="form-group">
@@ -107,7 +107,7 @@
                 <td>
                   <div>
                     <button type="button" id="add_cart" class="btn btn-primary">
-                      <i class="fa fa-cart-plus"></i> Add
+                      <i class="fa fa-cart-plus"></i> Tambah
                     </button>
                   </div>
                 </td>
@@ -139,12 +139,12 @@
                   <tr>
                     <th>#</th>
                     <th>Barcode</th>
-                    <th>Product Item</th>
-                    <th>Price</th>
-                    <th>Qty</th>
-                    <th width="10%">Discount</th>
+                    <th>Nama Barang</th>
+                    <th>Harga</th>
+                    <th>Jml</th>
+                    <th width="10%">Diskon</th>
                     <th width="15%">Total</th>
-                    <th>Actions</th>
+                    <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="cart_table">
@@ -175,7 +175,7 @@
                   </tr>
                   <tr>
                     <td style="vertical-align: top;">
-                        <label for="discount">Discount</label>
+                        <label for="discount">Diskon</label>
                     </td>
                     <td>
                       <div class="form-group">
@@ -185,7 +185,7 @@
                   </tr>
                   <tr>
                     <td style="vertical-align: top;">
-                        <label for="grand_total">Grand Total</label>
+                        <label for="grand_total">Total Akhir</label>
                     </td>
                     <td>
                         <div class="form-group">
@@ -205,7 +205,7 @@
               <table width="100%">
                   <tr>
                    <td style="vertical-align: top; width: 30%">
-                   <label for="cash">Cash</label>
+                   <label for="cash">Tunai</label>
                    </td>
                    <td>
                      <div class="form-group">
@@ -215,7 +215,7 @@
                   </tr>
                   <tr>
                     <td style="vertical-align: top;">
-                        <label for="change">Change</label>
+                        <label for="change">Kembalian</label>
                     </td>
                     <td>
                       <div class="form-group">
@@ -235,7 +235,7 @@
               <table width="100%">
                   <tr>
                    <td style="vertical-align: top">
-                   <label for="note">Note</label>
+                   <label for="note">Catatan</label>
                    </td>
                    <td>
                      <div>
@@ -251,13 +251,13 @@
         <div class="col-lg-3">
             <div>
              <button id="cancel_payment" class="btn btn-warning">
-               <i class="fa fa-ban"></i> Cancel Payment
+               <i class="fa fa-ban"></i> Batal
              </button><br><br>
              <button id="reset_transaction" class="btn btn-secondary">
-               <i class="fa fa-refresh"></i> Reset Transaction
+               <i class="fa fa-refresh"></i> Reset
              </button><br><br>
              <button id="process_payment" class="btn btn-success">
-               <i class="fa fa-paper-plane"></i> Process Payment
+               <i class="fa fa-paper-plane"></i> Proses Bayar
              </button>
             </div>
         </div>

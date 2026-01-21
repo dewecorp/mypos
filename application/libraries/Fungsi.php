@@ -84,14 +84,18 @@ Class Fungsi {
         }
 
         function PdfGenerator($html, $filename, $paper, $orientation) {
-        $dompdf = new Dompdf\Dompdf();
-        $dompdf->loadHtml($html);
-        // (Optional) Setup the paper size and orientation
-        $dompdf->setPaper($paper, $orientation);
-        // Render the HTML as PDF
-        $dompdf->render();
-        // Output the generated PDF to Browser
-        $dompdf->stream($filename, array('Attachment' => 0));
+            if(class_exists('Dompdf\\Dompdf')) {
+                $dompdf = new Dompdf\Dompdf();
+                $dompdf->loadHtml($html);
+                // (Optional) Setup the paper size and orientation
+                $dompdf->setPaper($paper, $orientation);
+                // Render the HTML as PDF
+                $dompdf->render();
+                // Output the generated PDF to Browser
+                $dompdf->stream($filename, array('Attachment' => 0));
+            } else {
+                show_error('Dompdf library is not installed');
+            }
         }
     }
         

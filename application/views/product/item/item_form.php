@@ -12,11 +12,11 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1><?=ucfirst($page)?> Items</h1>
+            <h1><?=ucfirst($page)?> Barang</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Items</a></li>
+              <li class="breadcrumb-item"><a href="#">Barang</a></li>
               <li class="breadcrumb-item active">Data Barang</li>
             </ol>
           </div>
@@ -59,7 +59,7 @@
                                 </select>                               
                             </div>  
                             <div class="form-group">
-                                <label> Unit *</label>
+                                <label> Satuan *</label>
                                 <select name="unit" id="" class="form-control">
                                 <option <?php echo form_dropdown('unit', $unit, $selectedunit,
                                     ['class' => 'from-control', 'required' => 'required'])  ?>
@@ -67,11 +67,15 @@
                                 </select>                
                             </div>  
                             <div class="form-group">
-                                <label> Price *</label>                               
+                                <label> Harga *</label>                               
                                 <input type="number" name="price" value="<?=$row->price?>" class="form-control" required>                                
-                            </div>  
+                            </div>
                             <div class="form-group">
-                                <label> Image</label> 
+                                <label> Stok</label>                               
+                                <input type="number" name="stock" value="<?=$row->stock?>" class="form-control" value="0">                                
+                            </div>
+                            <div class="form-group">
+                                <label> Gambar</label> 
                                 <?php if($page == 'edit') {
                                     if($row->image != null) { ?>
                                     <div style="margin-bottom: 5px;">

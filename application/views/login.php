@@ -28,7 +28,7 @@
           <p class="login-box-msg">Silahkan Login</p>
           <form action="<?=site_url()?>auth/process" method="post">
             <div class="input-group mb-3">
-              <input type="text" name="username" class="form-control" placeholder="Username" required>
+              <input type="text" name="username" class="form-control" placeholder="Nama Pengguna" required>
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span class="fas fa-user"></span>
@@ -36,7 +36,7 @@
               </div>
             </div>
             <div class="input-group mb-3">
-              <input type="password" name="password" class="form-control" placeholder="Password" required>
+              <input type="password" name="password" class="form-control" placeholder="Kata Sandi" required>
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span class="fas fa-lock"></span>
@@ -48,7 +48,7 @@
               </div>
               <!-- /.col -->
               <div class="col-4">
-                <button type="submit" name="login" class="btn btn-primary btn-block" id="#timer">Log In</button>
+                <button type="submit" name="login" class="btn btn-primary btn-block" id="#timer">Masuk</button>
               </div>
               <!-- /.col -->
             </div>

@@ -36,7 +36,9 @@ class User extends CI_Controller {
         $this->form_validation->set_error_delimiters('<span class="help-block">', '</span>');
 
         if ($this->form_validation->run() == FALSE) {
-            $this->template->load('template', 'user/user_form_add');
+            $data['row'] = $this->user_m->get();
+            $data['modal_add'] = true;
+            $this->template->load('template', 'user/user_data', $data);
         } else {
            $post = $this->input->post(null, TRUE);
            $this->user_m->add($post);
@@ -47,7 +49,7 @@ class User extends CI_Controller {
         }
     }
 
-    public function edit($id) 
+    public function edit($id = null) 
     {       
         $this->form_validation->set_rules('fullname', 'Nama', 'required');
 		$this->form_validation->set_rules('username', 'Username', 'required|min_length[5]|callback_username_check');
@@ -71,15 +73,17 @@ class User extends CI_Controller {
         $this->form_validation->set_error_delimiters('<span class="help-block">', '</span>');
 
         if ($this->form_validation->run() == FALSE) {
-			$query = $this->user_m->get($id);
-			if($query->num_rows() > 0) {
-                $data['row'] = $query->row();			
-			    $this->template->load('template', 'user/user_form_edit', $data);		
-        } else {
-            $this->session->set_flashdata('error', 'Data tidak ditemukan');
-            redirect('user');
-        }
-	} else {
+            // Check if it's a submission or just loading the form? 
+            // With modals, we only hit this method on submission.
+            // But if validation fails, we re-load the main page with errors.
+            $data['row'] = $this->user_m->get();
+            $data['modal_edit'] = true;
+            $data['row_edit'] = (object)$this->input->post(null, TRUE); // Pass back submitted data
+            // If id is not in post (it should be hidden), use the one from url or post
+            $data['edit_id'] = $this->input->post('user_id'); 
+            
+			$this->template->load('template', 'user/user_data', $data);		
+	    } else {
            $post = $this->input->post(null, TRUE);
            $this->user_m->edit($post);
            if($this->db->affected_rows() > 0) {

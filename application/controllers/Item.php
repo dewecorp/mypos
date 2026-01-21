@@ -15,6 +15,8 @@ class item extends CI_Controller {
 	public function index()
 	{
 		$data['row'] = $this->item_m->get();
+        $data['category'] = $this->category_m->get();
+        $data['unit'] = $this->unit_m->get();
 		$this->template->load('template', 'product/item/item_data', $data);
 	}
 
@@ -24,6 +26,7 @@ class item extends CI_Controller {
         $item->barcode = null;
         $item->name = null;
 		$item->price = null;
+        $item->stock = null;
 		$item->category_id = null;
 
         $query_category = $this->category_m->get();
@@ -83,7 +86,7 @@ class item extends CI_Controller {
 		if(isset($_POST['add'])) {
 			if($this->item_m->check_barcode($post['barcode'])->num_rows() > 0) {
 				$this->session->set_flashdata('error', "Barcode $post[barcode] sudah dipakai barang lain");
-				redirect('item/add');
+				redirect('item');
 			} else {
 				if(@$_FILES['image']['name'] != null) {
 					if($this->upload->do_upload('image')) {
@@ -97,7 +100,7 @@ class item extends CI_Controller {
 					} else {
 						$error = $this->upload->display_errors();
 						$this->session->set_flashdata('error', $error);
-						redirect('item/add');
+						redirect('item');
 					}
 			} else {
 				$post['image'] = null;
@@ -113,7 +116,7 @@ class item extends CI_Controller {
 		} else if(isset($_POST['edit'])) {
 				if($this->item_m->check_barcode($post['barcode'], $post['id'])->num_rows() > 0) {
 				$this->session->set_flashdata('error', "Barcode $post[barcode] sudah dipakai barang lain");
-				redirect('item/edit/'.$post['id']);
+				redirect('item');
 				} else {
 					if(@$_FILES['image']['name'] != null) {
 						if($this->upload->do_upload('image')) {
@@ -133,7 +136,7 @@ class item extends CI_Controller {
 						} else {
 							$error = $this->upload->display_errors();
 							$this->session->set_flashdata('error', $error);
-							redirect('item/add');
+							redirect('item');
 						}
 				} else {
 					$post['image'] = null;

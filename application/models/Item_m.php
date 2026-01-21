@@ -38,7 +38,8 @@ class item_m extends CI_Model {
             'name' => $post['product_name'], 
             'category_id' => $post['category'], 
             'unit_id' => $post['unit'], 
-            'price' => $post['price'],            
+            'price' => $post['price'],
+            'stock' => $post['stock'],
             'updated' => date('Y-m-d H:i:s')
         ];
         if($post['image'] != null) {

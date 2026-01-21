@@ -21,6 +21,8 @@ class Stock extends CI_Controller {
 
     public function stock_in_data() {
         $data['row'] = $this->stock_m->get_stock_in()->result();
+        $data['item'] = $this->item_m->get()->result();
+        $data['supplier'] = $this->supplier_m->get()->result();
         $this->template->load('template', 'transaction/stock_in/stock_in_data', $data);
     }
 
@@ -60,7 +62,7 @@ class Stock extends CI_Controller {
             $row_item = $this->item_m->get($this->input->post('item_id'))->row();
             if($row_item->stock < $this->input->post('qty')) {
                 $this->session->set_flashdata('error', 'Qty melebihi stock barang');
-                redirect('stock/out/add'); 
+                redirect('stock/out'); 
             } else {
                 $this->stock_m->add_stock_out($post);
                 $this->item_m->update_stock_out($post);
@@ -75,6 +77,7 @@ class Stock extends CI_Controller {
 
     public function stock_out_data() {
         $data['row'] = $this->stock_m->get_stock_out()->result();
+        $data['item'] = $this->item_m->get()->result();
         $this->template->load('template', 'transaction/stock_out/stock_out_data', $data);
     }
 
