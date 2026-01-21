@@ -6,15 +6,20 @@ Class Fungsi {
 
     function __construct() {
         $this->ci =& get_instance() ;
-
-        }
+        date_default_timezone_set('Asia/Jakarta');
+    }
 
         function user_login() {
-            $this->ci->load->model('user_m');
-            $user_id = $this->ci->session->userdata('userid');
-            $user_data = $this->ci->user_m->get($user_id)->row();
-            return $user_data;
-        }
+        $this->ci->load->model('user_m');
+        $user_id = $this->ci->session->userdata('userid');
+        $user_data = $this->ci->user_m->get($user_id)->row();
+        return $user_data;
+    }
+
+    function get_setting() {
+        $this->ci->load->model('setting_m');
+        return $this->ci->setting_m->get();
+    }
 
         public function count_item() {
             $this->ci->load->model('item_m');

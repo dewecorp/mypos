@@ -81,7 +81,7 @@
 
     <!-- Modal Add -->
     <div class="modal fade" id="modal-add">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Tambah Barang Masuk</h4>

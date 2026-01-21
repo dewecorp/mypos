@@ -13,6 +13,9 @@
     body, .content-wrapper, .main-header, .main-sidebar, .btn, .form-control, .nav-link, h1, h2, h3, h4, h5, h6, span, p, a, div, table, th, td, label {
       font-family: 'Poppins', sans-serif !important;
     }
+    body, .content-wrapper, .main-header, .main-sidebar, .btn, .form-control, .nav-link, span, p, a, div, table, th, td, label {
+      font-size: 11pt !important;
+    }
   </style>
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/toastr/toastr.min.css">
@@ -38,6 +41,9 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
+      <li class="nav-item d-none d-sm-inline-block">
+        <span class="nav-link" id="live_clock" style="cursor: default; font-weight: bold;"></span>
+      </li>
       <!-- Messages Dropdown Menu -->
       <?php if($is_pos_page) { ?>
         <li class="nav-item">
@@ -66,7 +72,7 @@
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">myPOS 2020</span>
+      <span class="brand-text font-weight-light"><?= $this->fungsi->get_setting()->shop_name ?></span>
     </a>
 
     <!-- Sidebar -->
@@ -181,11 +187,16 @@
 
           <?php if ($this->fungsi->user_login()->level == 1) { ?>
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-header">PENGATURAN</li>
+          <li class="nav-header">PENGATURAN</li>  
+          <li class="nav-item">
+            <a href="<?=site_url('setting')?>" class="nav-link">
+              <i class="nav-icon fas fa-cogs"></i>
+              <p>Toko</p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="<?=site_url('user')?>" class="nav-link">
-              <i class="nav-icon fas fa-user"></i>
-              <p>
+              <i class="nav-icon fas fa-user"></i>              <p>
                Pengguna
               </p>
             </a>
@@ -248,28 +259,6 @@
     });
   });
 
-  var flashSuccess = '<?=$this->session->flashdata('success')?>';
-  if(flashSuccess) {
-      Swal.fire({
-          icon: 'success',
-          title: 'Sukses',
-          text: flashSuccess,
-          showConfirmButton: false,
-          timer: 1500
-      })
-  }
-
-  var flashError = '<?=$this->session->flashdata('error')?>';
-  if(flashError) {
-      Swal.fire({
-          icon: 'error',
-          title: 'Gagal',
-          text: flashError,
-          showConfirmButton: false,
-          timer: 1500
-      })
-  }
-
   $(document).on('click', 'a.swal-delete-link', function(e){
     e.preventDefault();
     var href = $(this).attr('href');
@@ -298,6 +287,30 @@
       if(res.isConfirmed) { $form.off('submit').submit(); }
     });
   });
+
+  function updateClock() {
+    var now = new Date();
+    var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    
+    var dayName = days[now.getDay()];
+    var date = now.getDate();
+    var monthName = months[now.getMonth()];
+    var year = now.getFullYear();
+    
+    var hours = String(now.getHours()).padStart(2, '0');
+    var minutes = String(now.getMinutes()).padStart(2, '0');
+    var seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    var timeString = dayName + ', ' + date + ' ' + monthName + ' ' + year + ' ' + hours + ':' + minutes + ':' + seconds;
+    var clockElement = document.getElementById('live_clock');
+    if(clockElement) {
+        clockElement.textContent = timeString;
+    }
+  }
+  
+  setInterval(updateClock, 1000);
+  updateClock();
 </script>
 
 </body>

@@ -4,18 +4,40 @@
 <meta charset="utf-8">
 <title>Invoice</title>
 <link rel="stylesheet" href="<?=base_url()?>assets/dist/css/adminlte.min.css">
+  <style>
+    @media print {
+      .btn, .no-print {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 <body>
+<?php
+$ci =& get_instance();
+$ci->load->model('setting_m');
+$setting = $ci->setting_m->get();
+?>
 <div class="container mt-3">
   <div class="row">
     <div class="col-8">
       <h3>Invoice <?=$header->invoice?></h3>
+      <div class="mb-2">
+          <strong><?=$setting->shop_name?></strong><br>
+          <?=$setting->address?><br>
+          Telp: <?=$setting->phone?>
+      </div>
       <div>Tanggal: <?=$header->date?></div>
       <div>Customer: <?=$header->customer_id ? $header->customer_name : 'Umum'?></div>
       <div>Kasir: <?=$header->user_name?></div>
     </div>
     <div class="col-4 text-right">
-      <button class="btn btn-primary" onclick="window.print()">Cetak</button>
+      <a href="<?=site_url('sale/cetak_struk/'.$header->sale_id)?>" target="_blank" class="btn btn-warning btn-sm mr-2">
+        <i class="fas fa-print"></i> Struk 58mm
+      </a>
+      <button class="btn btn-primary btn-sm" onclick="window.print()">
+        <i class="fas fa-print"></i> Invoice A4
+      </button>
     </div>
   </div>
   <hr>

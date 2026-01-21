@@ -55,14 +55,7 @@ class Sale extends CI_Controller {
 		}
 	}
 
-	public function cetak($id)
-	{
-		$data = array(
-			'sale' => $this->sale_m->get_sale($id)->row(),
-			'sale_detail' => $this->sale_m->get_sale_details($id)->result(),
-		);
-		$this->load->view('transaction/sale/receipt_print', $data);
-	}
+
 
 	public function process()
 	{
@@ -143,6 +136,16 @@ class Sale extends CI_Controller {
 		$header = $this->sale_m->get_sale($sale_id)->row();
 		$details = $this->sale_m->get_sale_details($sale_id)->result();
 		$this->load->view('transaction/sale/invoice', ['header' => $header, 'details' => $details]);
+	}
+
+	public function cetak($sale_id) {
+		$this->invoice($sale_id);
+	}
+
+	public function cetak_struk($sale_id) {
+		$header = $this->sale_m->get_sale($sale_id)->row();
+		$details = $this->sale_m->get_sale_details($sale_id)->result();
+		$this->load->view('transaction/sale/struk_print', ['header' => $header, 'details' => $details]);
 	}
 
 	public function report()

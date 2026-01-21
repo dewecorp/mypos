@@ -24,12 +24,11 @@
             <div class="small-box bg-info">
               <div class="inner">
                 <h3><?=$this->fungsi->count_item()?></h3>
-                <p>Items</p>
+                <p>Jumlah Barang</p>
               </div>
               <div class="icon">
                 <i class="fas fa-list"></i>
               </div>
-              <a href="<?=site_url('item')?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
@@ -97,7 +96,22 @@
                   </div>
                   <?php $lastDate = $curDate; } ?>
                   <div>
-                    <i class="fas fa-user bg-blue"></i>
+                    <?php
+                    $icon = 'fa-star';
+                    $bg = 'bg-gray';
+                    switch($act->type) {
+                        case 'login': $icon = 'fa-sign-in-alt'; $bg = 'bg-success'; break;
+                        case 'logout': $icon = 'fa-sign-out-alt'; $bg = 'bg-secondary'; break;
+                        case 'create': 
+                            $icon = 'fa-plus'; 
+                            $bg = 'bg-primary';
+                            if($act->entity == 'sale') { $icon = 'fa-shopping-cart'; $bg = 'bg-info'; }
+                            break;
+                        case 'update': $icon = 'fa-edit'; $bg = 'bg-warning'; break;
+                        case 'delete': $icon = 'fa-trash'; $bg = 'bg-danger'; break;
+                    }
+                    ?>
+                    <i class="fas <?=$icon?> <?=$bg?>"></i>
                     <div class="timeline-item">
                       <span class="time"><i class="far fa-clock"></i> <?=format_tz($act->created_at, 'Asia/Jakarta', 'Y-m-d H:i:s')?> (<?=time_ago($act->created_at)?>)</span>
                       <h3 class="timeline-header"><a href="#"><?=$act->user_name ?: 'System'?></a> <?=$act->type?> <?=$act->entity?></h3>
