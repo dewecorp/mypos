@@ -8,6 +8,12 @@
 
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="<?=base_url()?>assets/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <style>
+    body, .content-wrapper, .main-header, .main-sidebar, .btn, .form-control, .nav-link, h1, h2, h3, h4, h5, h6, span, p, a, div, table, th, td, label {
+      font-family: 'Poppins', sans-serif !important;
+    }
+  </style>
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/toastr/toastr.min.css">
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
@@ -15,24 +21,27 @@
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 </head>
-<body class="hold-transition <?=$this->uri->segment(1) == 'sale' || $this->uri->segment(1) == '' ? 'layout-top-nav' : 'sidebar-mini layout-navbar-fixed'?>">
+<?php $is_pos_page = strtolower($this->router->fetch_class()) == 'sale' && strtolower($this->router->fetch_method()) == 'index'; ?>
+<body class="hold-transition <?=$is_pos_page ? 'layout-top-nav' : 'sidebar-mini layout-navbar-fixed'?>">
 <!-- Site wrapper -->
 <div class="wrapper">
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-blue navbar-light">
     <!-- Left navbar links -->
+    <?php if(!$is_pos_page) { ?>
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
     </ul>
+    <?php } ?>
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Messages Dropdown Menu -->
-      <?php if($this->uri->segment(1) == 'sale') { ?>
+      <?php if($is_pos_page) { ?>
         <li class="nav-item">
-          <a href="<?=site_url('dashboard')?>" class="nav-link"> <i class="fas fa-user-cog"></i><strong> Login Admin</strong></a>
+          <a href="<?=site_url('dashboard')?>" class="nav-link" target="_blank"> <i class="fas fa-user-cog"></i><strong> Login Admin</strong></a>
         </li>
       <?php } else { ?>
       <li class="nav-item d-none d-sm-inline-block">
@@ -48,7 +57,7 @@
   </nav>
   <!-- /.navbar -->
 
-  <?php if($this->uri->segment(1) != 'sale' && $this->uri->segment(1) != '') { ?>
+  <?php if(!$is_pos_page) { ?>
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4 sticky-top">
     <!-- Brand Logo -->
@@ -124,12 +133,12 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <a href="<?=site_url('sale')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Penjualan</p>
                 </a>
-              </li>
+              </li> -->
               <li class="nav-item">
                 <a href="<?=site_url('stock/in')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
