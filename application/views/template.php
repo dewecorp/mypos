@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 </head>
-<body class="hold-transition sidebar-mini layout-navbar-fixed">
+<body class="hold-transition <?=$this->uri->segment(1) == 'sale' || $this->uri->segment(1) == '' ? 'layout-top-nav' : 'sidebar-mini layout-navbar-fixed'?>">
 <!-- Site wrapper -->
 <div class="wrapper">
   <!-- Navbar -->
@@ -30,9 +30,15 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Messages Dropdown Menu -->
+      <?php if($this->uri->segment(1) == 'sale') { ?>
+        <li class="nav-item">
+          <a href="<?=site_url('dashboard')?>" class="nav-link"> <i class="fas fa-user-cog"></i><strong> Login Admin</strong></a>
+        </li>
+      <?php } else { ?>
       <li class="nav-item d-none d-sm-inline-block">
         <a href="<?=site_url('auth/logout')?>" class="nav-link"> <i class="fas fa-sign-out-alt"></i><strong> Log Out</strong></a>
       </li>
+      <?php } ?>
       <li class="nav-item">
         <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
           <i class="fas fa-th-large"></i>
@@ -42,6 +48,7 @@
   </nav>
   <!-- /.navbar -->
 
+  <?php if($this->uri->segment(1) != 'sale' && $this->uri->segment(1) != '') { ?>
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4 sticky-top">
     <!-- Brand Logo -->
@@ -183,6 +190,7 @@
     </div>
     <!-- /.sidebar -->
   </aside>
+  <?php } ?>
 
   <script src="<?=base_url()?>assets/plugins/jquery/jquery.min.js"></script>
 

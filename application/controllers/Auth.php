@@ -3,6 +3,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Auth extends CI_Controller {
 
+	/**
+	 * @var User_m
+	 */
+	public $user_m;
+
+	/**
+	 * @var Fungsi
+	 */
+	public $fungsi;
+
+
 	public function index()
 	{
 		$this->login();
@@ -29,7 +40,7 @@ class Auth extends CI_Controller {
 				$this->session->set_userdata($params);
 				$this->session->set_flashdata('success', 'Login berhasil');
 				$this->fungsi->log_activity('login', 'user', $row->user_id, 'Login');
-				redirect('dashboard');
+				redirect('sale');
 				} else {
 					$this->session->set_flashdata('error', 'Login gagal, username/password salah');
 					redirect('auth/login');

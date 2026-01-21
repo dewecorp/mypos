@@ -463,7 +463,9 @@
       success: function(res){
         if(res && res.success) {
           Swal.fire({title:'Transaksi berhasil', icon:'success', timer:1500, showConfirmButton:false});
-          window.open('<?=site_url('sale/invoice/')?>'+res.sale_id, '_blank');
+          setTimeout(function() {
+            window.open('<?=site_url('sale/cetak/')?>'+res.sale_id, '_blank');
+          }, 1000);
         } else {
           Swal.fire({title:(res && res.message ? res.message : 'Gagal simpan transaksi'), icon:'error'});
         }

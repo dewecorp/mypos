@@ -62,7 +62,5 @@
     <script src="<?=base_url()?>assets/js/jquery.min.js"></script>
     <script src="<?=base_url()?>assets/js/bootstrap.min.js"></script>
     <script src="<?=base_url()?>assets/js/sweetalert2.min.js"></script>
-    <script type="text/javascript">
-      
   </body>
 </html>

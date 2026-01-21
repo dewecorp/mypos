@@ -5,7 +5,19 @@ class Sale extends CI_Controller {
 	function __construct()
 		{
 				parent::__construct();
-				check_not_login();
+				if(!$this->session->userdata('userid')) {
+					$this->load->model('user_m');
+					$user = $this->user_m->get()->row();
+					if($user) {
+						$params = array(
+							'userid' => $user->user_id,
+							'level' => $user->level
+						);
+						$this->session->set_userdata($params);
+					} else {
+						redirect('auth/login');
+					}
+				}
 				$this->load->model('sale_m');
 				$this->load->model('item_m');
 				$this->load->model('stock_m');
@@ -41,6 +53,15 @@ class Sale extends CI_Controller {
 		} else {
 			echo json_encode(['success' => false]);
 		}
+	}
+
+	public function cetak($id)
+	{
+		$data = array(
+			'sale' => $this->sale_m->get_sale($id)->row(),
+			'sale_detail' => $this->sale_m->get_sale_details($id)->result(),
+		);
+		$this->load->view('transaction/sale/receipt_print', $data);
 	}
 
 	public function process()
