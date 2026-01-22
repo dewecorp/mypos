@@ -28,7 +28,6 @@ $setting = $ci->setting_m->get();
           Telp: <?=$setting->phone?>
       </div>
       <div>Tanggal: <?=$header->date?></div>
-      <div>Customer: <?=$header->customer_id ? $header->customer_name : 'Umum'?></div>
       <div>Kasir: <?=$header->user_name?></div>
     </div>
     <div class="col-4 text-right">

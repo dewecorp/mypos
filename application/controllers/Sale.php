@@ -20,16 +20,12 @@ class Sale extends CI_Controller {
 				}
 				$this->load->model('sale_m');
 				$this->load->model('item_m');
-				$this->load->model('stock_m');
 		}
 
 	public function index()
 	{
-		$this->load->model('customer_m');
-		$customer = $this->customer_m->get()->result();
 		$items = $this->item_m->get()->result();
 		$data = array(
-			'customer' => $customer,
 			'invoice' => $this->sale_m->invoice_no(),
 			'items' => $items,
 		);
@@ -75,15 +71,9 @@ class Sale extends CI_Controller {
 					->set_output(json_encode(['success' => false, 'message' => 'Item tidak ditemukan']));
 				return;
 			}
-			if((int)$row->stock < (int)$it['qty']) {
-				$this->output->set_content_type('application/json')
-					->set_output(json_encode(['success' => false, 'message' => 'Stok tidak cukup untuk '.$row->name]));
-				return;
-			}
 		}
 		$header = [
 			'invoice' => $post['invoice'],
-			'customer_id' => $post['customer'] === '' ? NULL : (int)$post['customer'],
 			'total_price' => (int)$post['sub_total'],
 			'discount' => (int)$post['discount'],
 			'final_price' => (int)$post['grand_total'],
@@ -105,17 +95,6 @@ class Sale extends CI_Controller {
 				'discount' => (int)$it['discount'],
 				'total' => (int)$it['total'],
 			];
-			$this->item_m->update_stock_out([
-				'item_id' => (int)$it['item_id'],
-				'qty' => (int)$it['qty'],
-			]);
-			$this->stock_m->add_stock_out([
-				'item_id' => (int)$it['item_id'],
-				'detail' => 'sale '.$header['invoice'],
-				'qty' => (int)$it['qty'],
-				'date' => $header['date'],
-				'supplier' => ''
-			]);
 		}
 		$this->sale_m->add_sale_detail($detail);
 		$this->db->trans_complete();
@@ -160,12 +139,7 @@ class Sale extends CI_Controller {
 	{
 		$header = $this->sale_m->get_sale($sale_id)->row();
 		if(!$header) { show_404(); return; }
-		$details = $this->sale_m->get_sale_details($sale_id)->result();
 		$this->db->trans_start();
-		foreach($details as $d) {
-			$this->item_m->update_stock_in(['item_id' => $d->item_id, 'qty' => $d->qty]);
-		}
-		$this->stock_m->delete_by_detail('sale '.$header->invoice);
 		$this->db->where('sale_id', $sale_id)->delete('t_sale_detail');
 		$this->db->where('sale_id', $sale_id)->delete('t_sale');
 		$this->db->trans_complete();
@@ -200,11 +174,6 @@ class Sale extends CI_Controller {
 		foreach($ids as $sale_id) {
 			$header = $this->sale_m->get_sale($sale_id)->row();
 			if(!$header) { continue; }
-			$details = $this->sale_m->get_sale_details($sale_id)->result();
-			foreach($details as $d) {
-				$this->item_m->update_stock_in(['item_id' => $d->item_id, 'qty' => $d->qty]);
-			}
-			$this->stock_m->delete_by_detail('sale '.$header->invoice);
 			$this->db->where('sale_id', $sale_id)->delete('t_sale_detail');
 			$this->db->where('sale_id', $sale_id)->delete('t_sale');
 			$deleted++;
@@ -228,12 +197,7 @@ class Sale extends CI_Controller {
 			$this->output->set_content_type('application/json')->set_output(json_encode(['success' => false, 'message' => 'Data tidak ditemukan']));
 			return;
 		}
-		$details = $this->sale_m->get_sale_details($id)->result();
 		$this->db->trans_start();
-		foreach($details as $d) {
-			$this->item_m->update_stock_in(['item_id' => $d->item_id, 'qty' => $d->qty]);
-		}
-		$this->stock_m->delete_by_detail('sale '.$header->invoice);
 		$this->db->where('sale_id', $id)->delete('t_sale_detail');
 		$this->db->where('sale_id', $id)->delete('t_sale');
 		$this->db->trans_complete();
@@ -250,11 +214,9 @@ class Sale extends CI_Controller {
 		$this->db->trans_start();
 		$sales = $this->sale_m->get_sales_older_than($cutoff)->result();
 		foreach($sales as $row) {
-			$this->stock_m->delete_by_detail('sale '.$row->invoice);
 			$this->db->where('sale_id', $row->sale_id)->delete('t_sale_detail');
 			$this->db->where('sale_id', $row->sale_id)->delete('t_sale');
 		}
-		$this->stock_m->delete_older_than($cutoff);
 		$this->db->trans_complete();
 
 		if($this->input->is_ajax_request()) {

@@ -17,6 +17,8 @@
     ?>
     <br><br>
     <?=$barcode?>
-
+    <script>
+        window.print();
+    </script>
 </body>
 </html>

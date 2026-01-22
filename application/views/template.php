@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="shortcut icon" href="">
+  <link rel="icon" href="<?=base_url()?>assets/dist/img/sales_icon.svg">
 
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="<?=base_url()?>assets/dist/css/adminlte.min.css">
@@ -68,8 +68,8 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4 sticky-top">
     <!-- Brand Logo -->
     <a href="<?=site_url('dashboard')?>" class="brand-link">
-      <img src="<?=base_url()?>assets/dist/img/AdminLTELogo.png"
-           alt="AdminLTE Logo"
+      <img src="<?=base_url()?>assets/dist/img/sales_icon.svg"
+           alt="MyPOS Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
       <span class="brand-text font-weight-light"><?= $this->fungsi->get_setting()->shop_name ?></span>
@@ -101,64 +101,20 @@
           </li>
         <li class="nav-header">MENU UTAMA</li>
           
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
+          <li class="nav-item">
+            <a href="<?=site_url('item')?>" class="nav-link">
               <i class="nav-icon fas fa-archive"></i>
-              <p>
-                Produk
-                <i class="fas fa-angle-left right"></i>
-              </p>
+              <p>Data Barang</p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="<?=site_url('category')?>" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Kategori</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?=site_url('unit')?>" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Satuan</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?=site_url('item')?>" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Barang</p>
-                </a>
-              </li>
-            </ul>
           </li>
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
+          <?php if ($this->fungsi->user_login()->level != 1) { ?>
+          <li class="nav-item">
+            <a href="<?=site_url('sale')?>" class="nav-link">
               <i class="nav-icon fas fa-shopping-cart"></i>
-              <p>
-                Transaksi
-                <i class="fas fa-angle-left right"></i>
-              </p>
+              <p>Penjualan</p>
             </a>
-            <ul class="nav nav-treeview">
-              <!-- <li class="nav-item">
-                <a href="<?=site_url('sale')?>" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Penjualan</p>
-                </a>
-              </li> -->
-              <li class="nav-item">
-                <a href="<?=site_url('stock/in')?>" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Stok Masuk</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="<?=site_url('stock/out')?>" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Stok Keluar</p>
-                </a>
-              </li>
-            </ul>
           </li>
+          <?php } ?>
 
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
@@ -175,12 +131,12 @@
                   <p>Penjualan</p>
                 </a>
               </li>
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <a href="<?=site_url('stock/report')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Stok</p>
                 </a>
-              </li>
+              </li> -->
 
             </ul>
           </li>

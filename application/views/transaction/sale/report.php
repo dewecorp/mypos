@@ -38,7 +38,6 @@
             <th><input type="checkbox" id="check_all"></th>
             <th>Tanggal</th>
             <th>Invoice</th>
-            <th>Customer</th>
             <th>Kasir</th>
             <th>Grand Total</th>
             <th>Aksi</th>
@@ -50,7 +49,6 @@
             <td><input type="checkbox" class="row_check" value="<?=$r->sale_id?>"></td>
             <td><?=$r->date?></td>
             <td><?=$r->invoice?></td>
-            <td><?=$r->customer_name ?: 'Umum'?></td>
             <td><?=$r->user_name?></td>
             <td><?=$r->final_price?></td>
             <td>

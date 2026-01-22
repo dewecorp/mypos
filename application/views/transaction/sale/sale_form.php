@@ -50,21 +50,6 @@
                     </div>
                   </td>
                 </tr>
-                <tr>
-                  <td style="vertical-align:top">
-                    <label for="customer">Pelanggan</label>
-                  </td>
-                  <td>
-                    <div >
-                      <select id="customer"class="form-control">
-                        <option value="">Umum</option>
-                        <?php foreach($customer as $cust => $value) {
-                          echo '<option value="'.$value->customer_id.'">'.$value->name.'</option>';
-                        } ?>
-                      </select>
-                    </div>
-                  </td>
-                </tr>
               </table>
             </div>
           </div>
@@ -83,7 +68,6 @@
                       <input type="hidden" id="item_id">
                       <input type="hidden" id="item_name">
                       <input type="hidden" id="price">
-                      <input type="hidden" id="stock">
                       <input type="text" id="barcode" class="form-control" autofocus>
                       <span class="input-group-btn">
                         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-item">
@@ -297,7 +281,6 @@
               <th>Barcode</th>
               <th>Nama</th>
               <th>Harga</th>
-              <th>Stok</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -307,15 +290,13 @@
               <td><?=$it->barcode?></td>
               <td><?=$it->name?></td>
               <td><?=$it->price?></td>
-              <td><?=$it->stock?></td>
               <td>
                 <button type="button"
                   class="btn btn-primary btn-sm select-item"
                   data-item_id="<?=$it->item_id?>"
                   data-barcode="<?=$it->barcode?>"
                   data-name="<?=$it->name?>"
-                  data-price="<?=$it->price?>"
-                  data-stock="<?=$it->stock?>">
+                  data-price="<?=$it->price?>">
                   Pilih
                 </button>
               </td>
@@ -328,6 +309,23 @@
   </div>
   </div>
 <script>
+  $(document).ready(function() {
+    var table = $('#item_table').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true
+    });
+    
+    // Fix DataTable width issue inside modal
+    $('#modal-item').on('shown.bs.modal', function () {
+       table.columns.adjust().responsive.recalc();
+    });
+  });
+
   var cart = [];
   function renderCart() {
     var tbody = $('#cart_table');
@@ -379,7 +377,6 @@
         $('#item_id').val(res.item_id);
         $('#item_name').val(res.name);
         $('#price').val(res.price);
-        $('#stock').val(res.stock);
       } else {
         Swal.fire({title:'Barcode tidak ditemukan', icon:'error'});
       }
@@ -391,16 +388,13 @@
       var bc = $('#barcode').val();
       var name = $('#item_name').val();
       var price = parseInt($('#price').val() || 0);
-      var stock = parseInt($('#stock').val() || 0);
       var qty = parseInt($('#qty').val() || 1);
-      if(qty > stock) { Swal.fire({title:'Stok tidak mencukupi', icon:'error'}); return; }
       var discount = 0;
       var total = (price * qty) - discount;
       var existingIndex = cart.findIndex(function(c){ return c.item_id == item_id; });
       if(existingIndex >= 0) {
         var existing = cart[existingIndex];
         var newQty = existing.qty + qty;
-        if(newQty > stock) { Swal.fire({title:'Stok tidak mencukupi', icon:'error'}); return; }
         existing.qty = newQty;
         existing.total = (existing.price * existing.qty) - existing.discount;
         cart[existingIndex] = existing;
@@ -420,7 +414,6 @@
       $('#item_id').val('');
       $('#item_name').val('');
       $('#price').val('');
-      $('#stock').val('');
       $('#qty').val(1);
     } else {
       Swal.fire({title:'Silakan pilih barang terlebih dahulu', icon:'info', timer:1200, showConfirmButton:false});
@@ -431,12 +424,10 @@
     var name = $(this).data('name');
     var bc = $(this).data('barcode');
     var price = parseInt($(this).data('price'));
-    var stock = parseInt($(this).data('stock'));
     $('#barcode').val(bc);
     $('#item_id').val(item_id);
     $('#item_name').val(name);
     $('#price').val(price);
-    $('#stock').val(stock);
     $('#qty').val(1);
     $('#modal-item').modal('hide');
     $('#qty').focus();
@@ -481,7 +472,6 @@
     $('#item_id').val('');
     $('#item_name').val('');
     $('#price').val('');
-    $('#stock').val('');
     $('#qty').val(1);
     $('#discount').val(0);
     $('#cash').val(0);

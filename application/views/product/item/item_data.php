@@ -29,6 +29,15 @@
      <?php $this->view('messages') ?>
         <div class="box">
               <div class="float-right">
+                  <a href="<?=site_url('item/barcode_print_all')?>" class="btn btn-info btn-sm" target="_blank">
+                      <i class="fa fa-barcode"></i> Cetak Semua Barcode
+                  </a>
+                  <a href="<?=site_url('item/qrcode_print_all')?>" class="btn btn-info btn-sm" target="_blank">
+                      <i class="fa fa-qrcode"></i> Cetak Semua QR-Code
+                  </a>
+                  <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-import">
+                      <i class="fa fa-file-excel"></i> Import Excel
+                  </button>
                   <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-add">
                       <i class="fa fa-plus"></i> Tambah Barang
                   </button>
@@ -42,11 +51,7 @@
                             <th>#</th>
                             <th>Barcode</th>
                             <th>Nama Barang</th>
-                            <th>Kategori</th>
-                            <th>Satuan</th>
                             <th>Harga</th>
-                            <th>Stok</th>
-                            <th>Gambar</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -63,15 +68,7 @@
                               </a>
                             </td>
                             <td><?=$data->name?></td>
-                            <td><?=$data->category_name?></td>
-                            <td><?=$data->unit_name?></td>
                             <td>Rp. <?=number_format($data->price, 2, ",", ".")?></td>
-                            <td><?=$data->stock?></td>
-                            <td>
-                              <?php if($data->image != null) { ?>
-                                <img src="<?=base_url('uploads/product/'.$data->image)?>" style="width:80px">
-                              <?php } ?>
-                            </td>
 
                             <td class="text-center" width="160px">
                                 <button type="button" class="btn btn-primary btn-xs"
@@ -79,10 +76,7 @@
                                     data-id="<?=$data->item_id?>"
                                     data-barcode="<?=$data->barcode?>"
                                     data-name="<?=$data->name?>"
-                                    data-category="<?=$data->category_id?>"
-                                    data-unit="<?=$data->unit_id?>"
                                     data-price="<?=$data->price?>"
-                                    data-stock="<?=$data->stock?>"
                                     onclick="edit_item(this)">
                                     <i class="fa fa-edit"></i> Edit
                                 </button>
@@ -114,38 +108,12 @@
                 <div class="modal-body">
                     <?=form_open_multipart('item/process')?>
                         <div class="form-group">
-                            <label>Barcode *</label>
-                            <input type="text" name="barcode" class="form-control" required>
-                        </div>
-                        <div class="form-group">
                             <label>Nama Barang *</label>
                             <input type="text" name="product_name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label>Kategori *</label>
-                            <select name="category" class="form-control" required>
-                                <option value="">- Pilih -</option>
-                                <?php foreach($category->result() as $key => $cat) { ?>
-                                    <option value="<?=$cat->category_id?>"><?=$cat->name?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Satuan *</label>
-                            <select name="unit" class="form-control" required>
-                                <option value="">- Pilih -</option>
-                                <?php foreach($unit->result() as $key => $unt) { ?>
-                                    <option value="<?=$unt->unit_id?>"><?=$unt->name?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label>Harga *</label>
                             <input type="number" name="price" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Gambar</label>
-                            <input type="file" name="image" class="form-control">
                         </div>
                         <div class="form-group" align="right">
                             <button type="submit" name="add" class="btn btn-success btn-sm">
@@ -171,45 +139,14 @@
                 </div>
                 <div class="modal-body">
                     <?=form_open_multipart('item/process')?>
-                        <div class="form-group">
-                            <label>Barcode *</label>
-                            <input type="hidden" name="id" id="edit_id">
-                            <input type="text" name="barcode" id="edit_barcode" class="form-control" required>
-                        </div>
+                        <input type="hidden" name="id" id="edit_id">
                         <div class="form-group">
                             <label>Nama Barang *</label>
                             <input type="text" name="product_name" id="edit_name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label>Kategori *</label>
-                            <select name="category" id="edit_category" class="form-control" required>
-                                <option value="">- Pilih -</option>
-                                <?php foreach($category->result() as $key => $cat) { ?>
-                                    <option value="<?=$cat->category_id?>"><?=$cat->name?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Satuan *</label>
-                            <select name="unit" id="edit_unit" class="form-control" required>
-                                <option value="">- Pilih -</option>
-                                <?php foreach($unit->result() as $key => $unt) { ?>
-                                    <option value="<?=$unt->unit_id?>"><?=$unt->name?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label>Harga *</label>
                             <input type="number" name="price" id="edit_price" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Stok</label>
-                            <input type="number" name="stock" id="edit_stock" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Gambar</label>
-                            <input type="file" name="image" class="form-control">
-                            <small>(Biarkan kosong jika tidak diganti)</small>
                         </div>
                         <div class="form-group" align="right">
                             <button type="submit" name="edit" class="btn btn-success btn-sm">
@@ -222,23 +159,98 @@
         </div>
     </div>
 
+    <!-- Modal Import -->
+    <div class="modal fade" id="modal-import">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Import Data Barang</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-import" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>File Excel</label>
+                            <input type="file" name="file" class="form-control" required accept=".xlsx, .xls">
+                            <small class="text-muted">Gunakan template yang disediakan. <a href="<?=site_url('item/download_template')?>">Download Template</a></small>
+                        </div>
+                        <div class="progress mb-3" style="display:none;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                        </div>
+                        <div id="import-result" class="alert" style="display:none;"></div>
+                        <div class="form-group" align="right">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fa fa-upload"></i> Upload & Import
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </html>
 <script>
+    $(document).ready(function() {
+        $('#form-import').on('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var progressBar = $('.progress-bar');
+            var progressContainer = $('.progress');
+            var resultDiv = $('#import-result');
+            
+            progressContainer.show();
+            progressBar.width('0%');
+            resultDiv.hide().removeClass('alert-success alert-danger');
+            
+            $.ajax({
+                url: '<?=site_url('item/import')?>',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = (evt.loaded / evt.total) * 100;
+                            progressBar.width(percentComplete + '%');
+                            progressBar.html(Math.round(percentComplete) + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function(response) {
+                    try {
+                        var res = JSON.parse(response);
+                        if(res.success) {
+                            resultDiv.addClass('alert-success').html(res.message).show();
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            resultDiv.addClass('alert-danger').html(res.message).show();
+                        }
+                    } catch(e) {
+                         resultDiv.addClass('alert-danger').html('Respon tidak valid').show();
+                    }
+                },
+                error: function() {
+                    resultDiv.addClass('alert-danger').html('Terjadi kesalahan saat upload').show();
+                }
+            });
+        });
+    });
+
     function edit_item(btn) {
         var id = $(btn).data('id');
-        var barcode = $(btn).data('barcode');
         var name = $(btn).data('name');
-        var category = $(btn).data('category');
-        var unit = $(btn).data('unit');
         var price = $(btn).data('price');
-        var stock = $(btn).data('stock');
 
         $('#edit_id').val(id);
-        $('#edit_barcode').val(barcode);
         $('#edit_name').val(name);
-        $('#edit_category').val(category);
-        $('#edit_unit').val(unit);
         $('#edit_price').val(price);
-        $('#edit_stock').val(stock);
     }
 </script>

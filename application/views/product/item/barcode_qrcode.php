@@ -73,8 +73,10 @@
                         if ($barcode === '') {
                             echo '<span class="text-danger">QR Code tidak tersedia</span>';
                         } else {
-                            $qrCode = new Endroid\QrCode\QrCode($barcode);
-                            $qrCode->writeFile('uploads/qr-code/item-'.$barcode.'.png');
+                            $writer = new Endroid\QrCode\Writer\PngWriter();
+                            $qrCode = Endroid\QrCode\QrCode::create($barcode);
+                            $result = $writer->write($qrCode);
+                            $result->saveToFile('uploads/qr-code/item-'.$barcode.'.png');
                         }
                         ?>
                         <?php if ($barcode !== '') { ?>

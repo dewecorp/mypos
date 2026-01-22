@@ -11,9 +11,12 @@
     <?php if ($barcode === '') { ?>
         <span style="color:#dc3545;">QR Code tidak tersedia</span>
     <?php } else { ?>
-        <img src="uploads/qr-code/item-<?=$barcode?>.png" style="width: 200px;">
+        <img src="<?=base_url('uploads/qr-code/item-'.$barcode.'.png')?>" style="width: 200px;">
     <?php } ?>
     <br>
     <?=$barcode?>
+    <script>
+        window.print();
+    </script>
 </body>
 </html>

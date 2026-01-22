@@ -52,7 +52,6 @@
         <div>No: <?=$header->invoice?></div>
         <div>Tgl: <?=date('d/m/Y', strtotime($header->date))?></div>
         <div>Kasir: <?=$header->user_name?></div>
-        <div>Cust: <?=$header->customer_id ? $header->customer_name : 'Umum'?></div>
         <div class="border-bottom"></div>
         <br>
         

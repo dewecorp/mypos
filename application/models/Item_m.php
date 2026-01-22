@@ -6,10 +6,7 @@ class item_m extends CI_Model {
     public function get($id = null)
 
     {
-        $this->db->select('p_item.*, p_category.name as category_name, p_unit.name as unit_name');
         $this->db->from('p_item');
-        $this->db->join('p_category', 'p_category.category_id = p_item.category_id');
-        $this->db->join('p_unit', 'p_unit.unit_id = p_item.unit_id');
         if($id != null) {
             $this->db->where('item_id', $id);
         }
@@ -21,30 +18,47 @@ class item_m extends CI_Model {
     public function add($post)
     {
         $params = [
-            'barcode' => $post['barcode'], 
+            'barcode' => isset($post['barcode']) && !empty($post['barcode']) ? $post['barcode'] : $this->generate_barcode($post['product_name']), 
             'name' => $post['product_name'], 
-            'category_id' => $post['category'], 
-            'unit_id' => $post['unit'], 
             'price' => $post['price'],     
-            'image' => $post['image'],       
         ];
         $this->db->insert('p_item', $params);
+    }
+
+    public function generate_barcode($name) {
+        $initials = '';
+        $words = explode(' ', $name);
+        foreach($words as $w) {
+            $initials .= strtoupper(substr($w, 0, 1));
+        }
+        // Filter initials to only alphanumeric to be safe
+        $initials = preg_replace('/[^A-Z0-9]/', '', $initials);
+        
+        $ym = date('ym'); 
+        $prefix = $ym . $initials;
+        
+        // Find last sequence for this exact prefix pattern
+        $sql = "SELECT barcode FROM p_item WHERE barcode REGEXP '^" . $prefix . "[0-9]{4}$' ORDER BY barcode DESC LIMIT 1";
+        $query = $this->db->query($sql);
+        
+        if($query->num_rows() > 0) {
+            $last_barcode = $query->row()->barcode;
+            $last_seq = substr($last_barcode, strlen($prefix));
+            $new_seq = str_pad((int)$last_seq + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $new_seq = '0001';
+        }
+        
+        return $prefix . $new_seq;
     }
 
     public function edit($post)
     {
         $params = [
-            'barcode' => $post['barcode'], 
             'name' => $post['product_name'], 
-            'category_id' => $post['category'], 
-            'unit_id' => $post['unit'], 
             'price' => $post['price'],
-            'stock' => $post['stock'],
             'updated' => date('Y-m-d H:i:s')
         ];
-        if($post['image'] != null) {
-            $params['image'] = $post['image'];
-        }
         $this->db->where('item_id', $post['id']);
         $this->db->update('p_item', $params);
     }
@@ -61,27 +75,7 @@ class item_m extends CI_Model {
 
     public function del($id)
 	{
-       
-        $data['row'] = $this->item_m->get($id);
         $this->db->where('item_id', $id);
         $this->db->delete('p_item');
-    }
-
-    function update_stock_in($data) 
-    {
-        $qty = $data['qty'];
-        $id = $data['item_id'];
-        $sql = "UPDATE p_item SET stock = stock + '$qty' WHERE item_id = '$id'";
-        $this->db->query($sql);
-
-    }
-
-      function update_stock_out($data) 
-    {
-        $qty = $data['qty'];
-        $id = $data['item_id'];
-        $sql = "UPDATE p_item SET stock = stock - '$qty' WHERE item_id = '$id'";
-        $this->db->query($sql);
-
     }
 }
