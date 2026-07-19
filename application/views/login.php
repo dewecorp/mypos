@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="<?=base_url()?>assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <link rel="stylesheet" href="<?=base_url()?>assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?=base_url()?>assets/css/sweetalert2.min.css">
-    <link rel="stylesheet" href="<?=base_url()?>assets/css/font-awesome.min.css">
     <link rel="stylesheet" href="<?=base_url()?>assets/css/animate.min.css">
     <link rel="stylesheet" href="<?=base_url()?>assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <link rel="stylesheet" href="<?=base_url()?>assets/dist/css/adminlte.min.css">
