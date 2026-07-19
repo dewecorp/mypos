@@ -40,9 +40,9 @@ git fetch origin $Branch
 git pull --rebase origin $Branch
 git push -u origin $Branch
 
-# Zip artifact with timestamp
-$ts = Get-Date -Format "yyyyMMdd-HHmmss"
-$zip = "mypos-$ts.zip"
+# Zip artifact (overwrites previous backup)
+$zip = "mypos-backup.zip"
+if (Test-Path ".\$zip") { Remove-Item ".\$zip" -Force }
 Compress-Archive -Path ".\*" -DestinationPath ".\$zip" -Force
 Write-Host "Committed: $Message" -ForegroundColor Green
 Write-Host "Pushed to $Remote ($Branch). Zip created: $zip" -ForegroundColor Green
