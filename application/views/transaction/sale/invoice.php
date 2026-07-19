@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>Invoice</title>
-<link rel="stylesheet" href="<?=base_url()?>assets/dist/css/adminlte.min.css">
+<link rel="stylesheet" href="<?=base_url()?>assets/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="<?=base_url()?>assets/dist/css/adminlte.min.css">
   <style>
     @media print {
       .btn, .no-print {
