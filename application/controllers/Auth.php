@@ -40,7 +40,8 @@ class Auth extends CI_Controller {
 				$this->session->set_userdata($params);
 				$this->session->set_flashdata('success', 'Login berhasil');
 				$this->fungsi->log_activity('login', 'user', $row->user_id, 'Login');
-				redirect('sale');
+				$this->load->view('login', ['login_ok' => true]);
+				return;
 				} else {
 					$this->session->set_flashdata('error', 'Login gagal, username/password salah');
 					redirect('auth/login');
@@ -50,9 +51,8 @@ class Auth extends CI_Controller {
 
 	public function logout()
 	{
-		$params = array('userid', 'level');
 		$this->fungsi->log_activity('logout', 'user', $this->session->userdata('userid'), 'Logout');
-		$this->session->unset_userdata($params);
+		$this->session->sess_destroy();
 		redirect('auth/login');
 	}
 }

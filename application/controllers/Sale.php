@@ -24,10 +24,14 @@ class Sale extends CI_Controller {
 
 	public function index()
 	{
+		$this->load->model('setting_m');
 		$items = $this->item_m->get()->result();
+		$setting = $this->setting_m->get();
 		$data = array(
 			'invoice' => $this->sale_m->invoice_no(),
 			'items' => $items,
+			'discount_enabled' => isset($setting->enable_discount) ? (int)$setting->enable_discount : 0,
+			'auto_discount_percent' => isset($setting->auto_discount_percent) ? (float)$setting->auto_discount_percent : 0,
 		);
 		$this->template->load('template', 'transaction/sale/sale_form', $data);
 	}

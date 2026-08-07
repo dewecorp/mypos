@@ -22,6 +22,7 @@ class Dashboard extends CI_Controller {
 		$this->fungsi->purge_old_activities(24);
 		$activities = $this->fungsi->get_recent_activities(24);
 		$data = [
+			'title' => 'Dashboard | '.$this->fungsi->get_setting()->shop_name,
 			'today_income' => $today_income,
 			'month_income' => $month_income,
 			'total_income' => $total_income,

@@ -77,11 +77,11 @@
                                     data-barcode="<?=$data->barcode?>"
                                     data-name="<?=$data->name?>"
                                     data-price="<?=$data->price?>"
-                                    onclick="edit_item(this)">
-                                    <i class="fa fa-edit"></i> Edit
+                                    onclick="edit_item(this)" title="Edit">
+                                    <i class="fa fa-edit"></i>
                                 </button>
-                                <a href="<?=site_url('item/del/'.$data->item_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus barang ini?">
-                                        <i class="fa fa-trash"></i> Hapus</a>
+                                <a href="<?=site_url('item/del/'.$data->item_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus barang ini?" title="Hapus">
+                                        <i class="fa fa-trash"></i></a>
                             </td>
                         </tr>
                             <?php

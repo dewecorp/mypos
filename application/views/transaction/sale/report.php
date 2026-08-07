@@ -52,8 +52,8 @@
             <td><?=$r->user_name?></td>
             <td><?=$r->final_price?></td>
             <td>
-              <a class="btn btn-sm btn-info" href="<?=site_url('sale/invoice/'.$r->sale_id)?>">Detail</a>
-              <a href="<?=site_url('sale/delete/'.$r->sale_id)?>" class="btn btn-sm btn-danger swal-delete-link" data-title="Hapus transaksi <?=$r->invoice?>?">Hapus</a>
+              <button type="button" class="btn btn-sm btn-info btn-detail" data-id="<?=site_url('sale/invoice/'.$r->sale_id)?>" title="Detail"><i class="fa fa-eye"></i></button>
+              <a href="<?=site_url('sale/delete/'.$r->sale_id)?>" class="btn btn-sm btn-danger swal-delete-link" data-title="Hapus transaksi <?=$r->invoice?>?" title="Hapus"><i class="fa fa-trash"></i></a>
             </td>
           </tr>
           <?php } ?>
@@ -65,6 +65,24 @@
     </div>
   </div>
 </section>
+<div class="modal fade" id="detail_modal">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><i class="fas fa-file-invoice"></i> Detail Transaksi</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="height:70vh;">
+        <iframe id="detail_frame" src="" style="width:100%;height:100%;border:0;"></iframe>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
   $(function () {
     $('#report_table').DataTable({
@@ -76,6 +94,10 @@
       autoWidth: true,
       responsive: true
     });
+  });
+  $(document).on('click', '.btn-detail', function(){
+    $('#detail_frame').attr('src', $(this).data('id'));
+    $('#detail_modal').modal('show');
   });
   $('#check_all').on('change', function(){
     var checked = $(this).is(':checked');

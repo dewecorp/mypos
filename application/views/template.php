@@ -4,14 +4,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <?php $__brand = $this->fungsi->get_setting(); $shop_name = isset($__brand->shop_name) && $__brand->shop_name ? $__brand->shop_name : 'myPOS'; $shop_logo = isset($__brand->logo) ? $__brand->logo : ''; ?>
+  <?php
+    if (!isset($title) || !$title) {
+      $__map = [
+        'dashboard' => 'Dashboard',
+        'item' => 'Data Barang',
+        'sale' => 'Transaksi Penjualan',
+        'setting' => 'Pengaturan Toko',
+        'user' => 'Pengguna'
+      ];
+      $__mapmet = [
+        'report' => 'Laporan',
+        'add' => 'Tambah',
+        'edit' => 'Ubah',
+        'print' => 'Cetak'
+      ];
+      $__cls = strtolower($this->router->fetch_class());
+      $__met = strtolower($this->router->fetch_method());
+      $__nama = isset($__map[$__cls]) ? $__map[$__cls] : ucfirst(str_replace('_', ' ', $__cls));
+      if ($__cls == 'sale' && $__met == 'report') { $__nama = 'Laporan Penjualan'; }
+      elseif ($__met != 'index' && isset($__mapmet[$__met])) { $__nama .= ' &mdash; '.$__mapmet[$__met]; }
+      $__title = $__nama.' | '.$shop_name;
+    } else { $__title = $title; }
+  ?>
+  <title><?=$__title?></title>
   <link rel="icon" href="<?=base_url()?>assets/dist/img/sales_icon.svg">
 
   <link rel="stylesheet" href="<?=base_url()?>assets/plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="<?=base_url()?>assets/dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <style>
     body, .content-wrapper, .main-header, .main-sidebar, .btn, .form-control, .nav-link, h1, h2, h3, h4, h5, h6, span, p, a, div, table, th, td, label {
-      font-family: 'Poppins', sans-serif !important;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
     body, .content-wrapper, .main-header, .main-sidebar, .btn, .form-control, .nav-link, span, p, a, div, table, th, td, label {
       font-size: 11pt !important;
@@ -30,6 +55,21 @@
 <div class="wrapper">
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-blue navbar-light">
+    <!-- Brand (POS) -->
+    <?php if($is_pos_page) { ?>
+    <ul class="navbar-nav d-flex align-items-center mr-2">
+      <li class="nav-item">
+        <span class="nav-link d-flex align-items-center p-0" style="cursor: default;">
+          <?php if(!empty($shop_logo) && file_exists(FCPATH.'uploads/logo/'.$shop_logo)) { ?>
+            <img src="<?=base_url('uploads/logo/').$shop_logo?>" alt="<?=htmlspecialchars($shop_name, ENT_QUOTES)?>" class="mr-2 rounded-circle bg-white object-fit-cover" style="height:40px;width:40px;">
+          <?php } else { ?>
+            <span class="rounded-circle bg-primary text-white font-weight-bold d-flex align-items-center justify-content-center mr-2" style="width:40px;height:40px;font-size:1.1rem;"><?=strtoupper(substr($shop_name,0,1))?></span>
+          <?php } ?>
+          <strong class="text-dark" style="font-size:1.05rem;"><?=htmlspecialchars($shop_name, ENT_QUOTES)?></strong>
+        </span>
+      </li>
+    </ul>
+    <?php } ?>
     <!-- Left navbar links -->
     <?php if(!$is_pos_page) { ?>
     <ul class="navbar-nav">
@@ -51,7 +91,7 @@
         </li>
       <?php } else { ?>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?=site_url('auth/logout')?>" class="nav-link"> <i class="fas fa-sign-out-alt"></i><strong> Log Out</strong></a>
+        <a href="<?=site_url('auth/logout')?>" class="nav-link" id="logout_link"> <i class="fas fa-sign-out-alt"></i><strong> Log Out</strong></a>
       </li>
       <?php } ?>
       <li class="nav-item">
@@ -177,7 +217,7 @@
   <!-- /.content-wrapper -->
 
   <footer class="main-footer">
-    <strong>Copyright &copy; <?php echo date('Y') ?>  <a href="">myPOS</a>.</strong> All rights
+    <strong>Copyright &copy; <?php echo date('Y') ?>  <a href=""><?=htmlspecialchars($shop_name, ENT_QUOTES)?></a>.</strong> All rights
     reserved.
   </footer>
 
@@ -226,12 +266,34 @@
       confirmButtonText: 'Ya, hapus',
       cancelButtonText: 'Batal'
     }).then(function(res){
-      if(res.isConfirmed) { window.location = href; }
+      if(res && (res.isConfirmed === true || res.value === true)) { window.location.href = href; }
     });
   });
-  $(document).on('submit', 'form.swal-delete-form', function(e){
+  $(document).on('click', '#logout_link', function(e){
     e.preventDefault();
+    var href = $(this).attr('href') || '<?=site_url('auth/logout')?>';
+    Swal.fire({
+      title: 'Yakin ingin keluar?',
+      text: 'Sesi akun Anda akan berakhir.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      confirmButtonText: 'Ya, keluar',
+      cancelButtonText: 'Tidak'
+    }).then(function(result){
+      if(result && (result.isConfirmed === true || result.value === true)){
+        window.location.href = href;
+      }
+    });
+  });
+
+  $(document).on('submit', 'form.swal-delete-form', function(e){
     var $form = $(this);
+    if($form.data('confirmed')) {
+      $form.removeData('confirmed');
+      return true;
+    }
+    e.preventDefault();
     var title = $form.data('title') || 'Yakin menghapus data ini?';
     Swal.fire({
       title: title,
@@ -240,7 +302,10 @@
       confirmButtonText: 'Ya, hapus',
       cancelButtonText: 'Batal'
     }).then(function(res){
-      if(res.isConfirmed) { $form.off('submit').submit(); }
+      if(res.isConfirmed) {
+        $form.data('confirmed', true);
+        $form[0].submit();
+      }
     });
   });
 

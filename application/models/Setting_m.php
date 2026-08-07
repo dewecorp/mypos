@@ -16,6 +16,9 @@ class Setting_m extends CI_Model {
                 shop_name VARCHAR(100) DEFAULT 'MyPOS Store',
                 address TEXT,
                 phone VARCHAR(20),
+                enable_discount TINYINT(1) DEFAULT 0,
+                auto_discount_percent DECIMAL(5,2) DEFAULT 0,
+                logo VARCHAR(255) DEFAULT NULL,
                 updated DATETIME DEFAULT NULL
             )");
             $this->db->insert('p_setting', [
@@ -24,6 +27,20 @@ class Setting_m extends CI_Model {
                 'phone' => '0812-3456-7890',
                 'updated' => date('Y-m-d H:i:s')
             ]);
+        } else {
+            $this->ensure_column('enable_discount', "ADD COLUMN enable_discount TINYINT(1) DEFAULT 0");
+            $this->ensure_column('auto_discount_percent', "ADD COLUMN auto_discount_percent DECIMAL(5,2) DEFAULT 0");
+            $this->ensure_column('logo', "ADD COLUMN logo VARCHAR(255) DEFAULT NULL");
+        }
+    }
+
+    private function ensure_column($col, $sql)
+    {
+        $fields = $this->db->query("SHOW COLUMNS FROM p_setting")->result();
+        $exists = false;
+        foreach($fields as $f) { if($f->Field == $col) { $exists = true; break; } }
+        if(!$exists) {
+            $this->db->query("ALTER TABLE p_setting $sql");
         }
     }
 
@@ -40,6 +57,8 @@ class Setting_m extends CI_Model {
             'shop_name' => $post['shop_name'],
             'address' => $post['address'],
             'phone' => $post['phone'],
+            'enable_discount' => isset($post['enable_discount']) ? (int)$post['enable_discount'] : 0,
+            'auto_discount_percent' => isset($post['auto_discount_percent']) && $post['auto_discount_percent'] !== '' ? (float)$post['auto_discount_percent'] : 0,
             'updated' => date('Y-m-d H:i:s')
         ];
         $this->db->where('id', 1);

@@ -58,7 +58,6 @@
                             <td><?=$data->address?></td>
                             <td><?=$data->level == 1 ? "Admin" : "Kasir"?></td>
                             <td class="text-center" width="160px">
-                                <form action="<?=site_url('user/del')?>" method="post">
                                 <button type="button" class="btn btn-primary btn-xs"
                                     data-toggle="modal" data-target="#modal-edit"
                                     data-userid="<?=$data->user_id?>"
@@ -66,14 +65,12 @@
                                     data-name="<?=$data->name?>"
                                     data-address="<?=$data->address?>"
                                     data-level="<?=$data->level?>"
-                                    onclick="edit_user(this)">
-                                <i class="fa fa-edit"></i> Edit
-                                </button>                               
-                                <input type="hidden" name="user_id" value="<?=$data->user_id?>">
-                                <button onclick="return confirm('Apakah Anda Yakin?')" class="btn btn-danger btn-xs">
-                                <i class="fa fa-trash"></i> Hapus
-                                </button>                             
-                                </form>
+                                    onclick="edit_user(this)" title="Edit">
+                                <i class="fa fa-edit"></i>
+                                </button>
+                                <a href="<?=site_url('user/del/'.$data->user_id)?>" class="btn btn-danger btn-xs swal-delete-link" data-title="Yakin menghapus pengguna <?=$data->username?>?" title="Hapus">
+                                <i class="fa fa-trash"></i>
+                                </a>
                             </td>
                         </tr>
                         <?php

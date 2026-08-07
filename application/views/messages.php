@@ -2,7 +2,8 @@
 <script>
   window.addEventListener('load', function(){
     if(window.Swal){
-      Swal.fire({title:'Berhasil', html:'<?=addslashes($success)?>', icon:'success', timer:1500, showConfirmButton:false});
+      const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2500, timerProgressBar: true });
+      Toast.fire({ icon: 'success', title: 'Berhasil', html: '<?=addslashes($success)?>' });
     }
   });
   </script>
@@ -12,7 +13,8 @@
 <script>
   window.addEventListener('load', function(){
     if(window.Swal){
-      Swal.fire({title:'Gagal', html:'<?=addslashes(strip_tags(str_replace('</p>', '', $error)))?>', icon:'error'});
+      const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3500, timerProgressBar: true });
+      Toast.fire({ icon: 'error', title: 'Gagal', html: '<?=addslashes(strip_tags(str_replace('</p>', '', $error)))?>' });
     }
   });
 </script>
