@@ -5,19 +5,7 @@ class Sale extends CI_Controller {
 	function __construct()
 		{
 				parent::__construct();
-				if(!$this->session->userdata('userid')) {
-					$this->load->model('user_m');
-					$user = $this->user_m->get()->row();
-					if($user) {
-						$params = array(
-							'userid' => $user->user_id,
-							'level' => $user->level
-						);
-						$this->session->set_userdata($params);
-					} else {
-						redirect('auth/login');
-					}
-				}
+				check_not_login();
 				$this->load->model('sale_m');
 				$this->load->model('item_m');
 		}

@@ -87,7 +87,7 @@
       <!-- Messages Dropdown Menu -->
       <?php if($is_pos_page) { ?>
         <li class="nav-item">
-          <a href="<?=site_url('dashboard')?>" class="nav-link" target="_blank"> <i class="fas fa-user-cog"></i><strong> Login Admin</strong></a>
+          <a href="<?=site_url('auth/login')?>" class="nav-link" target="_blank"> <i class="fas fa-user-cog"></i><strong> Login Admin</strong></a>
         </li>
       <?php } else { ?>
       <li class="nav-item d-none d-sm-inline-block">
