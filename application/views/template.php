@@ -317,7 +317,7 @@
           timeout: 0,
           success: function(res){
             if(res && res.success) {
-              Swal.fire({ title: 'Update Berhasil!', text: res.message, icon: 'success', confirmButtonColor: '#047857' });
+              Swal.fire({ title: 'Update Berhasil!', text: res.message, icon: 'success', confirmButtonColor: '#047857' }).then(function(){ location.reload(); });
             } else {
               Swal.fire({ title: 'Update Gagal', text: (res && res.message ? res.message : 'Terjadi kesalahan'), icon: 'error' });
             }

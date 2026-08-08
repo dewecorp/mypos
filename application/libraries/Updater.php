@@ -5,8 +5,11 @@ class Updater {
 
     protected $ci;
     protected $repo;
+    protected $branch;
     protected $zip_url;
     protected $check_url;
+    protected $raw_version_url;
+    protected $zip_fallback_url;
     protected $version_file;
     protected $tmp_dir;
     protected $backup_dir;
@@ -17,8 +20,11 @@ class Updater {
         $this->ci =& get_instance();
         $this->ci->config->load('update', true);
         $this->repo = $this->ci->config->item('update_repo', 'update');
+        $this->branch = $this->ci->config->item('update_branch', 'update');
         $this->zip_url = $this->ci->config->item('update_zip_url', 'update');
         $this->check_url = $this->ci->config->item('update_check_url', 'update');
+        $this->raw_version_url = $this->ci->config->item('update_raw_version_url', 'update');
+        $this->zip_fallback_url = $this->ci->config->item('update_zip_fallback_url', 'update');
         $this->version_file = FCPATH.'version.txt';
         $this->tmp_dir = FCPATH.'uploads/update';
         $this->backup_dir = FCPATH.'uploads/backup';
@@ -34,6 +40,13 @@ class Updater {
 
     public function check_latest()
     {
+        $api = $this->api_latest();
+        if($api) { return $api; }
+        return $this->raw_latest();
+    }
+
+    protected function api_latest()
+    {
         if(!preg_match('#^https://api\.github\.com/#i', (string)$this->check_url)) {
             return false;
         }
@@ -42,7 +55,7 @@ class Updater {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_TIMEOUT => 15,
+            CURLOPT_TIMEOUT => 8,
             CURLOPT_HTTPHEADER => array('User-Agent: MyPOS-Updater', 'Accept: application/vnd.github+json')
         ));
         $resp = curl_exec($ch);
@@ -55,6 +68,28 @@ class Updater {
             'tag' => (string)$data['tag_name'],
             'version' => ltrim((string)$data['tag_name'], 'vV')
         );
+    }
+
+    protected function raw_latest()
+    {
+        if(!preg_match('#^https://(raw\.)?githubusercontent\.com/#i', (string)$this->raw_version_url)) {
+            return false;
+        }
+        $ch = curl_init($this->raw_version_url);
+        curl_setopt_array($ch, array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_TIMEOUT => 8,
+            CURLOPT_HTTPHEADER => array('User-Agent: MyPOS-Updater')
+        ));
+        $resp = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if($code != 200 || !$resp) { return false; }
+        $version = trim($resp);
+        if(!preg_match('/^[0-9]+(\.[0-9]+)*([-.]?[A-Za-z0-9]+)?$/', $version)) { return false; }
+        return array('tag' => $version, 'version' => $version);
     }
 
     public function has_update()
@@ -74,17 +109,31 @@ class Updater {
 
     public function download()
     {
+        $allowed = array('github.com', 'codeload.github.com', 'objects.githubusercontent.com');
         $host = parse_url($this->zip_url, PHP_URL_HOST);
-        if(!in_array(strtolower((string)$host), array('github.com', 'codeload.github.com', 'objects.githubusercontent.com'), true)) {
-            return array('status' => false, 'message' => 'Sumber update tidak valid');
+        if(in_array(strtolower((string)$host), $allowed, true) && strpos($this->zip_url, 'https://') === 0) {
+            $res = $this->fetch_zip($this->zip_url);
+            if($res['status']) { return $res; }
+            $primary_err = $res['message'];
+        } else {
+            $primary_err = 'Sumber update tidak valid';
         }
-        if(strpos($this->zip_url, 'https://') !== 0) {
-            return array('status' => false, 'message' => 'Sumber update harus HTTPS');
+        // Fallback: arsip zip branch
+        $fb_host = parse_url($this->zip_fallback_url, PHP_URL_HOST);
+        if(in_array(strtolower((string)$fb_host), $allowed, true) && strpos($this->zip_fallback_url, 'https://') === 0) {
+            $res = $this->fetch_zip($this->zip_fallback_url);
+            if($res['status']) { return $res; }
+            return array('status' => false, 'message' => 'Gagal mengunduh paket update: '.$res['message']);
         }
+        return array('status' => false, 'message' => $primary_err);
+    }
+
+    protected function fetch_zip($url)
+    {
         if(!is_dir($this->tmp_dir)) { @mkdir($this->tmp_dir, 0777, true); }
         $zip_path = $this->tmp_dir.'/update.zip';
         $fp = fopen($zip_path, 'w');
-        $ch = curl_init($this->zip_url);
+        $ch = curl_init($url);
         curl_setopt_array($ch, array(
             CURLOPT_RETURNTRANSFER => false,
             CURLOPT_FILE => $fp,
@@ -100,7 +149,7 @@ class Updater {
         fclose($fp);
         if(!$ok || $code != 200 || filesize($zip_path) < 100) {
             @unlink($zip_path);
-            return array('status' => false, 'message' => 'Gagal mengunduh paket update (HTTP '.$code.')');
+            return array('status' => false, 'message' => 'HTTP '.$code);
         }
         return array('status' => true, 'path' => $zip_path);
     }
@@ -351,11 +400,15 @@ class MyZipReader {
             }
             // baca local file header
             if(!$this->locate($e)) { return false; }
-            $data = fread($this->handle, $e['csize']);
+            if((int)$e['csize'] > 0) {
+                $data = fread($this->handle, $e['csize']);
+            } else {
+                $data = '';
+            }
             if($e['method'] === 0) {
                 $raw = $data;
             } elseif($e['method'] === 8) {
-                $raw = @gzinflate($data);
+                $raw = $data === '' ? '' : @gzinflate($data);
                 if($raw === false) { return false; }
             } else {
                 return false;

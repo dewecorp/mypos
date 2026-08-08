@@ -30,9 +30,23 @@ class Update extends CI_Controller {
             show_404();
             return;
         }
-        // Hanya admin (check_admin di constructor). Tanpa verifikasi password tambahan.
-        $res = $this->updater->run_update();
-        $this->respond($res['status'], $res['message']);
+        // Hanya admin (check_admin di constructor).
+        try {
+            $latest = $this->updater->check_latest();
+            if(!$latest) {
+                $this->respond(false, 'Tidak ada versi ditemukan di sumber pembaruan.');
+                return;
+            }
+            $current = $this->updater->current_version();
+            if(!version_compare($latest['version'], $current, '>')) {
+                $this->respond(false, 'Sistem sudah versi terbaru (v'.$current.').');
+                return;
+            }
+            $res = $this->updater->run_update();
+            $this->respond($res['status'], $res['message']);
+        } catch(Exception $e) {
+            $this->respond(false, 'Terjadi kesalahan: '.$e->getMessage());
+        }
     }
 
     private function respond($success, $message)
