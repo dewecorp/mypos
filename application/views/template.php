@@ -186,7 +186,7 @@
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="<?=site_url('dashboard')?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <?php if($__lv == 1) { ?>
-            <a class="dropdown-item" href="#" id="update_system"><i class="fas fa-sync-alt"></i> Update Sistem</a>
+            <a class="dropdown-item" href="#" id="update_system" onclick="return mypos_update()"><i class="fas fa-sync-alt"></i> Update Sistem</a>
             <?php } ?>
             <a class="dropdown-item text-danger" href="<?=site_url('auth/logout')?>" id="logout_link"><i class="fas fa-sign-out-alt"></i> Logout</a>
           </div>
@@ -231,9 +231,71 @@
       <div id="upd_icon" style="font-size:3rem;color:#047857;margin-bottom:12px;"><i class="fas fa-spinner fa-spin"></i></div>
       <h4 id="upd_title" style="margin:0 0 10px;font-weight:800;color:#26304a;">Update Sistem</h4>
       <div id="upd_msg" style="color:#55607a;font-size:14px;line-height:1.5;">Mengirim perintah update...</div>
-      <button id="upd_btn" onclick="jQuery('#upd_overlay').hide()" style="display:none;margin-top:16px;border:none;border-radius:9px;padding:8px 22px;background:#047857;color:#fff;font-weight:600;">Tutup</button>
+      <button id="upd_btn" onclick="document.getElementById('upd_overlay').style.display='none'" style="display:none;margin-top:16px;border:none;border-radius:9px;padding:8px 22px;background:#047857;color:#fff;font-weight:600;">Tutup</button>
     </div>
   </div>
+
+  <script>
+    var MYPOS_UPDATE_URL = '<?=site_url('update/run')?>';
+    function mypos_overlay(show) { document.getElementById('upd_overlay').style.display = show ? 'flex' : 'none'; }
+    function mypos_overlay_msg(m, ok) {
+      var icon = document.getElementById('upd_icon');
+      if(ok === undefined) { icon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; icon.style.color = '#047857'; }
+      else { icon.innerHTML = ok ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>'; icon.style.color = ok ? '#22c48b' : '#ef4444'; }
+      document.getElementById('upd_msg').textContent = m;
+      document.getElementById('upd_btn').style.display = (ok === undefined) ? 'none' : 'inline-block';
+    }
+    function mypos_confirm_and_update() {
+      try {
+        var run = false;
+        if (window.Swal) {
+          Swal.fire({
+            title: 'Konfirmasi Update',
+            html: 'Perbarui sistem ke versi terbaru?<br><strong>Pastikan koneksi stabil.</strong>',
+            icon: 'question', showCancelButton: true,
+            confirmButtonText: 'Ya, Update', cancelButtonText: 'Batal',
+            confirmButtonColor: '#047857'
+          }).then(function(r){
+            if(r && r.isConfirmed) { mypos_run_update(); }
+          }).catch(function(){ mypos_run_update(); });
+          return;
+        }
+        if (window.confirm('Perbarui sistem ke versi terbaru?')) { mypos_run_update(); }
+      } catch(e) {
+        alert('Terjadi kesalahan: ' + e.message);
+      }
+    }
+    function mypos_run_update() {
+      try {
+        mypos_overlay(true);
+        mypos_overlay_msg('Mengirim perintah update...');
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', MYPOS_UPDATE_URL, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+        xhr.onreadystatechange = function(){
+          if(xhr.readyState !== 4) { return; }
+          var txt = (xhr.responseText || '').trim();
+          var res = null;
+          try { res = JSON.parse(txt); } catch(e) { res = null; }
+          if(res && typeof res.success !== 'undefined') {
+            if(res.success) {
+              mypos_overlay_msg(res.message || 'Sistem berhasil diperbarui', true);
+              setTimeout(function(){ location.reload(); }, 1800);
+            } else {
+              mypos_overlay_msg(res.message || 'Update gagal', false);
+            }
+          } else {
+            mypos_overlay_msg('Respon tidak dikenali (HTTP ' + xhr.status + '). ' + (txt ? txt.slice(0,150) : 'kosong'), false);
+          }
+        };
+        xhr.send('');
+      } catch(e) {
+        mypos_overlay_msg('Gagal: ' + e.message, false);
+      }
+    }
+    function mypos_update() { mypos_confirm_and_update(); return false; }
+  </script>
 
   <script src="<?=base_url()?>assets/plugins/jquery/jquery.min.js"></script>
   <script src="<?=base_url()?>assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -300,71 +362,6 @@
         toastr.info('Versi baru v'+r.latest+' tersedia.', 'Pembaruan Tersedia');
       }
     });
-    $(document).on('click', '#update_system', function(e){
-      e.preventDefault();
-      try {
-        Swal.fire({
-          title: 'Konfirmasi Update',
-          html: 'Perbarui sistem ke versi terbaru?<br><strong>Pastikan koneksi stabil.</strong>',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Ya, Update',
-          cancelButtonText: 'Batal',
-          confirmButtonColor: '#047857'
-        }).then(function(r){
-          if(!r.isConfirmed) { return; }
-          runUpdate();
-        }).catch(function(){ runUpdate(); });
-      } catch(err) {
-        Swal.fire({ title: 'Terjadi kesalahan', text: String(err), icon: 'error' });
-      }
-    });
-
-    function showOverlay(msg) {
-      var o = document.getElementById('upd_overlay');
-      o.style.display = 'flex';
-      document.getElementById('upd_icon').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-      document.getElementById('upd_icon').style.color = '#047857';
-      document.getElementById('upd_msg').textContent = msg;
-      document.getElementById('upd_btn').style.display = 'none';
-    }
-    function showOverlayResult(ok, msg) {
-      document.getElementById('upd_icon').innerHTML = ok ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>';
-      document.getElementById('upd_icon').style.color = ok ? '#22c48b' : '#ef4444';
-      document.getElementById('upd_msg').textContent = msg;
-      document.getElementById('upd_btn').style.display = 'inline-block';
-    }
-    function showOverlaySuccess(m){ showOverlayResult(true, m); }
-    function showOverlayFail(m){ showOverlayResult(false, m); }
-
-    function runUpdate() {
-      showOverlay('Mengirim perintah update...');
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', '<?=site_url('update/run')?>', true);
-      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-      xhr.onreadystatechange = function(){
-        if(xhr.readyState !== 4) { return; }
-        var txt = (xhr.responseText || '').trim();
-        var res = null;
-        try { res = JSON.parse(txt); } catch(e) { res = null; }
-        if(res && typeof res.success !== 'undefined') {
-          if(res.success) {
-            showOverlaySuccess(res.message || 'Sistem berhasil diperbarui');
-            setTimeout(function(){ location.reload(); }, 1800);
-          } else {
-            showOverlayFail(res.message || 'Update gagal');
-          }
-        } else {
-          showOverlayFail('Respon tidak dikenali (HTTP '+xhr.status+'). ' + (txt ? txt.slice(0,120) : 'kosong'));
-        }
-      };
-      try {
-        xhr.send('');
-      } catch(err) {
-        showOverlayFail('Gagal menghubungi server: '+err.message);
-      }
-    }
     <?php } ?>
 
     function updateClock() {
