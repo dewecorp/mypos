@@ -187,7 +187,7 @@
             <a class="dropdown-item" href="<?=site_url('dashboard')?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <?php if($__lv == 1) { ?>
             <form method="post" action="<?=site_url('update/run')?>" style="margin:0;">
-              <button type="submit" name="run_update" class="dropdown-item" title="Perbarui sistem"><i class="fas fa-sync-alt"></i> Update Sistem</button>
+              <button type="submit" name="run_update" value="1" class="dropdown-item" title="Perbarui sistem"><i class="fas fa-sync-alt"></i> Update Sistem</button>
             </form>
             <?php } ?>
             <a class="dropdown-item text-danger" href="<?=site_url('auth/logout')?>" id="logout_link"><i class="fas fa-sign-out-alt"></i> Logout</a>

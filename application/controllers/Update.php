@@ -13,7 +13,7 @@ class Update extends CI_Controller {
 
     public function run()
     {
-        if(empty($this->input->post('run_update'))) { show_404(); return; }
+        if(!isset($_POST['run_update'])) { show_404(); return; }
         try {
             $res = $this->updater->run_update();
             if(!empty($res['ok'])) {
