@@ -5,6 +5,7 @@
   $shop_logo = isset($__brand->logo) ? $__brand->logo : '';
   $__cls = strtolower($this->router->fetch_class());
   $__met = strtolower($this->router->fetch_method());
+  $__ver = file_exists(FCPATH.'version.txt') ? trim(file_get_contents(FCPATH.'version.txt')) : '';
   if (!isset($title) || !$title) {
     $__map = ['dashboard' => 'Dashboard', 'item' => 'Data Barang', 'sale' => 'Transaksi Penjualan', 'setting' => 'Pengaturan Toko', 'user' => 'Pengguna'];
     $__mapmet = ['report' => 'Laporan', 'add' => 'Tambah', 'edit' => 'Ubah', 'print' => 'Cetak'];
@@ -185,7 +186,7 @@
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="<?=site_url('dashboard')?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <?php if($__lv == 1) { ?>
-            <a class="dropdown-item" href="#" id="update_system"><i class="fas fa-sync-alt"></i> Update Sistem</a>
+            <a class="dropdown-item" href="#" id="update_system"><i class="fas fa-sync-alt"></i> Update Sistem <span class="badge badge-light float-right">v<?=$__ver?></span></a>
             <?php } ?>
             <a class="dropdown-item text-danger" href="<?=site_url('auth/logout')?>" id="logout_link"><i class="fas fa-sign-out-alt"></i> Logout</a>
           </div>
@@ -286,9 +287,12 @@
 
     <?php if(!$__is_pos && $__lv == 1) { ?>
     $.getJSON('<?=site_url('update/check')?>', function(r){
-      if(r && r.has && r.has.ok && r.has.has) {
-        if(r.show_notif) {
-          toastr.info('Versi baru '+r.has.latest+' tersedia. Perbarui lewat menu pengguna.', 'Pembaruan Tersedia');
+      if(r && r.has && r.has.ok) {
+        if(r.has.has) {
+          $('#update_system .badge').text('v'+r.has.current+' → v'+r.has.latest).addClass('badge-danger');
+          if(r.show_notif) {
+            toastr.info('Versi baru v'+r.has.latest+' tersedia. Perbarui lewat menu pengguna.', 'Pembaruan Tersedia');
+          }
         }
       }
     });
@@ -306,7 +310,7 @@
         if(!r.isConfirmed) { return; }
         Swal.fire({
           title: 'Memproses Update...',
-          html: '<i class="fas fa-spinner fa-spin" style="font-size:3rem;color:#047857;display:block;margin-bottom:.5rem;"></i><span class="text-muted">Mengunduh & memasang pembaruan. Mohon tunggu, jangan tutup halaman.</span>',
+          html: '<i class="fas fa-spinner fa-spin" style="font-size:3rem;color:#047857;display:block;margin-bottom:.5rem;"></i><span class="text-muted">Mengunduh & memasang pembaruan.<br>Proses ini bisa memakan beberapa saat. Mohon tunggu, jangan tutup halaman.</span>',
           showConfirmButton: false, allowOutsideClick: false, allowEscapeKey: false
         });
         $.ajax({

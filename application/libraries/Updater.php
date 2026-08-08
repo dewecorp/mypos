@@ -183,6 +183,8 @@ class Updater {
         $errors = array();
         $files = $this->list_files($dir, 'php');
         foreach($files as $f) {
+            $rel = str_replace('\\', '/', str_replace($dir, '', $f));
+            if(strpos($rel, '/vendor/') !== false || strpos($rel, '/assets/') !== false) { continue; }
             $cmd = escapeshellarg(PHP_BINARY).' -l '.escapeshellarg($f).' 2>&1';
             exec($cmd, $out, $rc);
             if($rc !== 0) {
