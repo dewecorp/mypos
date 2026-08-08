@@ -28,23 +28,30 @@
     <section class="content">
      <?php $this->view('messages') ?>
         <div class="box">
-              <div class="float-right">
-                  <a href="<?=site_url('item/barcode_print_all')?>" class="btn btn-info btn-sm" target="_blank">
-                      <i class="fa fa-barcode"></i> Cetak Semua Barcode
-                  </a>
-                  <a href="<?=site_url('item/qrcode_print_all')?>" class="btn btn-info btn-sm" target="_blank">
-                      <i class="fa fa-qrcode"></i> Cetak Semua QR-Code
-                  </a>
-                  <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-import">
-                      <i class="fa fa-file-excel"></i> Import Excel
-                  </button>
-                  <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-add">
-                      <i class="fa fa-plus"></i> Tambah Barang
-                  </button>
+              <div class="box-header d-flex justify-content-between align-items-center flex-wrap">
+                  <div class="box-title"><i class="fa fa-archive"></i> Daftar Barang</div>
+                  <div class="btn-group-sm" style="display:flex;flex-wrap:wrap;gap:.35rem;">
+                      <a href="<?=site_url('item/export_excel')?>" class="btn btn-success btn-sm">
+                          <i class="fa fa-file-excel"></i> Ekspor Excel
+                      </a>
+                      <a href="<?=site_url('item/export_pdf')?>" class="btn btn-danger btn-sm" target="_blank">
+                          <i class="fa fa-file-pdf"></i> Ekspor PDF
+                      </a>
+                      <a href="<?=site_url('item/barcode_print_all')?>" class="btn btn-info btn-sm" target="_blank">
+                          <i class="fa fa-barcode"></i> Cetak Barcode
+                      </a>
+                      <a href="<?=site_url('item/qrcode_print_all')?>" class="btn btn-info btn-sm" target="_blank">
+                          <i class="fa fa-qrcode"></i> Cetak QR-Code
+                      </a>
+                      <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-import">
+                          <i class="fa fa-file-excel"></i> Import Excel
+                      </button>
+                      <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-add">
+                          <i class="fa fa-plus"></i> Tambah Barang
+                      </button>
+                  </div>
               </div>
-            </br>
-            </br>
-            <div class="box-body table-responsive">
+            <div class="box-body">
                 <table id="tabel" class="table table-bordered table-hover table-striped">
                     <thead>
                         <tr>

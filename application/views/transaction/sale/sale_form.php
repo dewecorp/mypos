@@ -6,9 +6,6 @@
   <title>Penjualan | myPOS</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- AdminLTE css biar font ikut template -->
-  <link rel="stylesheet" href="<?=base_url()?>assets/dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="<?=base_url()?>assets/plugins/fontawesome-free/css/all.min.css">
   <style>
     .content-wrapper > .content { padding: 1.4rem 2.2rem; max-width: 1500px; }
     .card-modern {

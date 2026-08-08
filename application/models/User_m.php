@@ -2,7 +2,25 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class User_m extends CI_Model {
-    
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->ensure_photo();
+    }
+
+    private function ensure_photo()
+    {
+        if($this->db->table_exists('user')) {
+            $fields = $this->db->query("SHOW COLUMNS FROM user")->result();
+            $exists = false;
+            foreach($fields as $f) { if($f->Field == 'photo') { $exists = true; break; } }
+            if(!$exists) {
+                $this->db->query("ALTER TABLE user ADD COLUMN photo VARCHAR(255) DEFAULT NULL");
+            }
+        }
+    }
+
     public function login($post)
     {
         $this->db->select('*');
@@ -28,7 +46,7 @@ class User_m extends CI_Model {
         $params['name'] = $post['fullname'];
         $params['username'] = $post['username'];
         $params['password'] = sha1($post['password']);
-        $params['address'] = $post['address'] != "" ? $post['address'] : null;
+        $params['photo'] = isset($post['photo']) && $post['photo'] ? $post['photo'] : null;
         $params['level'] = $post['level'];
         $this->db->insert('user', $params);
     }
@@ -39,8 +57,10 @@ class User_m extends CI_Model {
         $params['username'] = $post['username'];
         if(!empty($post['password'])) {
             $params['password'] = sha1($post['password']);
-        }       
-		$params['address'] = $post['address'] != "" ? $post['address'] : null;
+        }
+        if(isset($post['photo']) && $post['photo']) {
+            $params['photo'] = $post['photo'];
+        }
         $params['level'] = $post['level'];
         $this->db->where('user_id', $post['user_id']);
         $this->db->update('user', $params);

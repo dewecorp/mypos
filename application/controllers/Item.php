@@ -88,6 +88,57 @@ class item extends CI_Controller {
 
 
 
+	public function export_pdf()
+	{
+		$data['row'] = $this->item_m->get()->result();
+		$this->load->view('product/item/item_export_print', $data);
+	}
+
+	public function export_excel()
+	{
+		$rows = $this->item_m->get()->result();
+		$spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+
+		$__st = $this->fungsi->get_setting();
+		$shop = ($__st && !empty($__st->shop_name)) ? $__st->shop_name : 'Toko';
+
+		$sheet->setCellValue('A1', 'Data Barang '.$shop);
+		$sheet->mergeCells('A1:E1');
+		$sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+
+		$headers = ['No', 'Barcode', 'Nama Barang', 'Harga', 'Tanggal Input'];
+		$col = 'A';
+		foreach($headers as $h) {
+			$sheet->setCellValue($col.'3', $h);
+			$sheet->getStyle($col.'3')->getFont()->setBold(true);
+			$col++;
+		}
+
+		$no = 1;
+		$r = 4;
+		foreach($rows as $d) {
+			$sheet->setCellValue('A'.$r, $no++);
+			$sheet->setCellValue('B'.$r, $d->barcode);
+			$sheet->setCellValue('C'.$r, $d->name);
+			$sheet->setCellValue('D'.$r, $d->price);
+			$sheet->setCellValue('E'.$r, !empty($d->created) ? date('d/m/Y', strtotime($d->created)) : '-');
+			$r++;
+		}
+
+		$sheet->getStyle('D4:D'.$r)->getNumberFormat()->setFormatCode('#,##0');
+		foreach(range('A','E') as $c) {
+			$sheet->getColumnDimension($c)->setAutoSize(true);
+		}
+
+		$filename = 'Data_Barang_'.date('Ymd_His').'.xlsx';
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment;filename="'.$filename.'"');
+		header('Cache-Control: max-age=0');
+		$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+		$writer->save('php://output');
+	}
+
 	public function del($id)
 	{
 		$this->item_m->del($id);

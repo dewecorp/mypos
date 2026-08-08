@@ -26,13 +26,11 @@
     <!-- Main content -->
     <section class="content">
       <div class="box"> 
-        <div class="float-right">
-              <a href="<?=site_url('item')?>" class="btn btn-warning btn-sm">
-                  <i class="fa fa-undo"></i> Kembali
-              </a>
-          </div>
-        <div class="box-header">
+        <div class="box-header d-flex justify-content-between align-items-center">
           <h3 class="box-title"> Barcode Generator <i class="fa fa-barcode"></i></h3>
+          <a href="<?=site_url('item')?>" class="btn btn-warning btn-sm">
+              <i class="fa fa-undo"></i> Kembali
+          </a>
         </div> 
           
               </br>

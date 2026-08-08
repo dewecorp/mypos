@@ -41,6 +41,7 @@ class User extends CI_Controller {
             $this->template->load('template', 'user/user_data', $data);
         } else {
            $post = $this->input->post(null, TRUE);
+           $post['photo'] = $this->upload_photo();
            $this->user_m->add($post);
            if($this->db->affected_rows() > 0) {
             $this->session->set_flashdata('success', '<strong>Selamat,</strong> Data berhasil disimpan');
@@ -85,12 +86,32 @@ class User extends CI_Controller {
 			$this->template->load('template', 'user/user_data', $data);		
 	    } else {
            $post = $this->input->post(null, TRUE);
+           $photo = $this->upload_photo();
+           if($photo) { $post['photo'] = $photo; }
            $this->user_m->edit($post);
            if($this->db->affected_rows() > 0) {
             $this->session->set_flashdata('success', '<strong>Selamat,</strong> Data berhasil disimpan');
             }
             redirect('user');
 	    }
+    }
+
+    private function upload_photo()
+    {
+        if(empty($_FILES['photo']['name'])) { return null; }
+        $dir = FCPATH.'uploads/user';
+        if(!is_dir($dir)) { @mkdir($dir, 0777, true); }
+        $this->load->library('upload', array(
+            'upload_path' => $dir,
+            'allowed_types' => 'jpg|jpeg|png|webp',
+            'max_size' => 2048,
+            'overwrite' => true,
+            'file_name' => 'user_' . time()
+        ));
+        if($this->upload->do_upload('photo')) {
+            return $this->upload->data('file_name');
+        }
+        return null;
     }
     
     function username_check() {
