@@ -52,6 +52,7 @@
                             <th>Barcode</th>
                             <th>Nama Barang</th>
                             <th>Harga</th>
+                            <th>Tanggal Input</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -69,6 +70,7 @@
                             </td>
                             <td><?=$data->name?></td>
                             <td>Rp. <?=number_format($data->price, 2, ",", ".")?></td>
+                            <td><?=!empty($data->created) ? date('d/m/Y', strtotime($data->created)) : '-'?></td>
 
                             <td class="text-center" width="160px">
                                 <button type="button" class="btn btn-primary btn-xs"
@@ -107,6 +109,10 @@
                 </div>
                 <div class="modal-body">
                     <?=form_open_multipart('item/process')?>
+                        <div class="form-group">
+                            <label>Barcode <small class="text-muted">(scan untuk isi otomatis / kosongkan untuk auto)</small></label>
+                            <input type="text" name="barcode" id="add_barcode" class="form-control" autocomplete="off" placeholder="Scan barcode...">
+                        </div>
                         <div class="form-group">
                             <label>Nama Barang *</label>
                             <input type="text" name="product_name" class="form-control" required>
@@ -253,4 +259,16 @@
         $('#edit_name').val(name);
         $('#edit_price').val(price);
     }
+
+    $(document).ready(function(){
+        $('#modal-add').on('shown.bs.modal', function(){
+            setTimeout(function(){ $('#add_barcode').focus(); }, 300);
+        });
+        $('#add_barcode').on('keydown', function(e){
+            if(e.key === 'Enter') {
+                e.preventDefault();
+                $('input[name="product_name"]').focus();
+            }
+        });
+    });
 </script>

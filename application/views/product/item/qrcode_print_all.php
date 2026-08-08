@@ -46,7 +46,7 @@
     <div class="qrcode-container">
         <img src="<?=base_url($filePath)?>" style="width: 150px;">
         <br>
-        <?=$barcode?> <br> <?=$data->name?>
+        <?=$barcode?>
     </div>
     <?php 
         }

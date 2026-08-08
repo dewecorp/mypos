@@ -32,7 +32,7 @@
     <div class="barcode-container">
         <img src="data:image/png;base64,<?=base64_encode($generator->getBarcode($barcode, $generator::TYPE_CODE_128_B))?>" style="width: 200px;">
         <br>
-        <?=$barcode?> - <?=$data->name?>
+        <?=$barcode?>
     </div>
     <?php 
         }
