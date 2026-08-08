@@ -40,7 +40,7 @@ class Auth extends CI_Controller {
 				$this->session->set_userdata($params);
 				$this->session->set_flashdata('success', 'Login berhasil');
 				$this->fungsi->log_activity('login', 'user', $row->user_id, 'Login');
-				$this->load->view('login', ['login_ok' => true]);
+				$this->load->view('login', ['login_ok' => true, 'user_level' => (int)$row->level]);
 				return;
 				} else {
 					$this->session->set_flashdata('error', 'Login gagal, username/password salah');

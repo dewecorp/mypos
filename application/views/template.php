@@ -86,9 +86,16 @@
       </li>
       <!-- Messages Dropdown Menu -->
       <?php if($is_pos_page) { ?>
+        <?php $__lv = 0; $__usr = $this->fungsi->user_login(); if($__usr) { $__lv = (int)$__usr->level; } ?>
+        <?php if($__lv == 1) { ?>
         <li class="nav-item">
           <a href="<?=site_url('auth/login')?>" class="nav-link" target="_blank"> <i class="fas fa-user-cog"></i><strong> Login Admin</strong></a>
         </li>
+        <?php } else { ?>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="<?=site_url('auth/logout')?>" class="nav-link" id="logout_link"> <i class="fas fa-sign-out-alt"></i><strong> Logout</strong></a>
+        </li>
+        <?php } ?>
       <?php } else { ?>
       <li class="nav-item d-none d-sm-inline-block">
         <a href="<?=site_url('auth/logout')?>" class="nav-link" id="logout_link"> <i class="fas fa-sign-out-alt"></i><strong> Log Out</strong></a>

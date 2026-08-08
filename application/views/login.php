@@ -167,6 +167,9 @@
           <script>
             window.addEventListener('load', function(){
               if(window.Swal){
+                var lvl = <?=isset($user_level) ? (int)$user_level : 0?>;
+                var target = (lvl == 1) ? '<?=site_url('dashboard')?>' : '<?=site_url('sale')?>';
+                var toText = (lvl == 1) ? 'Mengarahkan ke dashboard...' : 'Mengarahkan ke form penjualan...';
                 Swal.fire({
                   title: 'Memproses...',
                   html: '<i class="fas fa-spinner fa-spin" style="font-size:3rem;color:#4f67a6;display:block;margin-bottom:.5rem;"></i><span class="text-muted">Mohon tunggu sebentar...</span>',
@@ -177,12 +180,12 @@
                 setTimeout(function(){
                   Swal.fire({
                     title: 'Login Berhasil!',
-                    html: '<i class="fas fa-check-circle" style="font-size:3rem;color:#28a745;display:block;margin-bottom:.5rem;"></i><strong>Selamat datang kembali.</strong><br><small>Mengarahkan ke dashboard...</small>',
+                    html: '<i class="fas fa-check-circle" style="font-size:3rem;color:#28a745;display:block;margin-bottom:.5rem;"></i><strong>Selamat datang kembali.</strong><br><small>'+toText+'</small>',
                     timer: 1800,
                     timerProgressBar: true,
                     showConfirmButton: false
                   });
-                  setTimeout(function(){ window.location.href = '<?=site_url('dashboard')?>'; }, 2100);
+                  setTimeout(function(){ window.location.href = target; }, 2100);
                 }, 1500);
               }
             });

@@ -64,24 +64,24 @@
     }
   </style>
 </head>
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h3>Transaksi</h3>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Transaksi</a></li>
-              <li class="breadcrumb-item active">Penjualan</li>
-            </ol>
+    <section class="content">
+      <?php $__st = $this->fungsi->get_setting(); $__stn = $__st && !empty($__st->shop_name) ? $__st->shop_name : 'Toko'; $__sad = $__st && !empty($__st->address) ? $__st->address : ''; $__spn = $__st && !empty($__st->phone) ? $__st->phone : ''; $__slo = $__st && !empty($__st->logo) ? $__st->logo : ''; ?>
+      <div class="card card-modern mb-3">
+        <div class="card-body">
+          <div class="d-flex align-items-center flex-wrap">
+            <?php if($__slo && file_exists(FCPATH.'uploads/logo/'.$__slo)) { ?>
+              <img src="<?=base_url('uploads/logo/').$__slo?>" alt="<?=htmlspecialchars($__stn, ENT_QUOTES)?>" class="mr-3 rounded-circle bg-white object-fit-cover" style="height:56px;width:56px;">
+            <?php } else { ?>
+              <span class="rounded-circle bg-primary text-white font-weight-bold d-flex align-items-center justify-content-center mr-3" style="width:56px;height:56px;font-size:1.4rem;"><?=strtoupper(substr($__stn,0,1))?></span>
+            <?php } ?>
+            <div class="mr-4">
+              <div class="font-weight-bold" style="font-size:1.15rem;"><?=htmlspecialchars($__stn, ENT_QUOTES)?></div>
+              <?php if($__sad) { ?><div class="text-muted small"><i class="fas fa-map-marker-alt mr-1" style="color:#4f67a6"></i><?=htmlspecialchars($__sad, ENT_QUOTES)?></div><?php } ?>
+              <?php if($__spn) { ?><div class="text-muted small"><i class="fas fa-phone mr-1" style="color:#4f67a6"></i><?=htmlspecialchars($__spn, ENT_QUOTES)?></div><?php } ?>
+            </div>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
-    </section>
-
-    <section class="content">
+      </div>
       <div class="row">
         <div class="col-lg-4">
           <div class="card card-modern mb-3">
@@ -463,20 +463,7 @@
     cart.splice(i,1);
     renderCart();
   });
-  $('#barcode').on('change', function(){
-    var bc = $(this).val();
-    if(!bc) return;
-    $.getJSON('<?=site_url('sale/get_item')?>', {barcode: bc}, function(res){
-      if(res && res.success) {
-        $('#item_id').val(res.item_id);
-        $('#item_name').val(res.name);
-        $('#price').val(res.price);
-      } else {
-        Swal.fire({title:'Barcode tidak ditemukan', icon:'error'});
-      }
-    });
-  });
-  $('#add_cart').on('click', function(){
+  function addToCart() {
     var item_id = $('#item_id').val();
     if(item_id) {
       var bc = $('#barcode').val();
@@ -512,8 +499,28 @@
       $('#item_name').val('');
       $('#price').val('');
       $('#qty').val(1);
+      $('#barcode').focus();
     } else {
       Swal.fire({title:'Silakan pilih barang terlebih dahulu', icon:'info', timer:1200, showConfirmButton:false});
+    }
+  }
+  $('#add_cart').on('click', addToCart);
+  $('#barcode').on('keydown', function(e){
+    if(e.key === 'Enter') {
+      e.preventDefault();
+      var bc = $(this).val();
+      if(!bc) return;
+      $.getJSON('<?=site_url('sale/get_item')?>', {barcode: bc}, function(res){
+        if(res && res.success) {
+          $('#item_id').val(res.item_id);
+          $('#item_name').val(res.name);
+          $('#price').val(res.price);
+          addToCart();
+        } else {
+          Swal.fire({title:'Barcode tidak ditemukan', icon:'error'});
+          $('#barcode').select();
+        }
+      });
     }
   });
   $(document).on('click', '.select-item', function(){
