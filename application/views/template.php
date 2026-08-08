@@ -56,6 +56,7 @@
     .topbar .dropdown-menu { border-radius: 12px; box-shadow: 0 10px 30px rgba(6,78,59,.18); border: 1px solid #e7ebf2; padding: .4rem 0; }
     .topbar .dropdown-item { border-radius: 8px; margin: 2px 6px; padding: 8px 12px; font-size: 14px; }
     .topbar .dropdown-item i { width: 18px; text-align: center; }
+    .topbar button.dropdown-item:focus, .topbar button.dropdown-item:active { outline: none !important; border: none !important; box-shadow: none !important; }
     .dropdown-toggle-no-caret::after { display: none; }
     .topbar .btn-outline-light { color: #fff; border-color: rgba(255,255,255,.55); }
     .topbar .btn-outline-light:hover { background: rgba(255,255,255,.15); color: #fff; border-color: #fff; }
@@ -186,7 +187,7 @@
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="<?=site_url('dashboard')?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <?php if($__lv == 1) { ?>
-            <form method="post" action="<?=site_url('update/run')?>" style="margin:0;">
+            <form id="update_sistem_form" method="post" action="<?=site_url('update/run')?>" style="margin:0;">
               <button type="submit" name="run_update" value="1" class="dropdown-item" title="Perbarui sistem"><i class="fas fa-sync-alt"></i> Update Sistem</button>
             </form>
             <?php } ?>
@@ -284,6 +285,38 @@
         confirmButtonText: 'Ya, keluar', cancelButtonText: 'Tidak'
       }).then(function(result){
         if(result && (result.isConfirmed === true || result.value === true)) { window.location.href = href; }
+      });
+    });
+
+    $(document).on('submit', '#update_sistem_form', function(e){
+      e.preventDefault();
+      var $form = $(this);
+      Swal.fire({
+        title: 'Perbarui Sistem?',
+        text: 'Sistem akan mengambil versi terbaru dari repository. Data dan database tidak akan diubah.',
+        icon: 'question', showCancelButton: true,
+        confirmButtonText: 'Ya, perbarui', cancelButtonText: 'Batal'
+      }).then(function(res){
+        if(!res.isConfirmed) { return; }
+        Swal.fire({
+          title: 'Memperbarui Sistem...',
+          text: 'Mengunduh dan memasang pembaruan. Jangan tutup halaman ini.',
+          allowOutsideClick: false, allowEscapeKey: false,
+          showConfirmButton: false, showCancelButton: false
+        });
+        Swal.showLoading();
+        $.post($form.attr('action'), $form.serialize() + '&ajax=1')
+          .done(function(r){
+            if(r && r.ok) {
+              Swal.fire({ title: 'Sukses', text: r.message || 'Sistem berhasil diperbarui.', icon: 'success' })
+                .then(function(){ window.location.reload(); });
+            } else {
+              Swal.fire({ title: 'Gagal', text: (r && r.message) ? r.message : 'Pembaruan gagal, silakan coba lagi.', icon: 'error' });
+            }
+          })
+          .fail(function(){
+            Swal.fire({ title: 'Gagal', text: 'Tidak dapat terhubung ke server, silakan coba lagi.', icon: 'error' });
+          });
       });
     });
 

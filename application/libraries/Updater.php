@@ -92,19 +92,24 @@ class Updater {
         @mkdir($ext, 0777, true);
         if(!$z->extractTo($ext)) { @unlink($zip); $this->rrmdir($ext); return array('ok' => false, 'message' => 'Gagal membongkar paket'); }
 
-        // 4. Tentukan folder proyek (jika ada folder induk)
-        $src = $ext;
-        if(file_exists($ext.'/index.php') && is_dir($ext.'/application')) { $src = $ext; }
-        else {
-            $fav = null;
-            foreach(array_diff(scandir($ext), array('.', '..')) as $it) {
-                if(is_dir($ext.'/'.$it) && file_exists($ext.'/'.$it.'/index.php')) { $fav = $ext.'/'.$it; break; }
-            }
-            if($fav) { $src = $fav; }
+        // 4. Tentukan folder proyek (zip Github selalu punya folder induk)
+        $src = null;
+        foreach(array_diff(scandir($ext), array('.', '..')) as $it) {
+            $p = $ext.'/'.$it;
+            if(is_dir($p) && file_exists($p.'/index.php') && is_dir($p.'/application')) { $src = $p; break; }
+        }
+        if($src === null && file_exists($ext.'/index.php') && is_dir($ext.'/application')) {
+            $src = $ext;
+        }
+        if($src === null) {
+            @unlink($zip); $this->rrmdir($ext);
+            return array('ok' => false, 'message' => 'Struktur paket tidak dikenali');
         }
 
         // 5. Timpa (skip konfigurasi lingkungan & folder data)
-        $skip = array('.git', 'uploads', 'version.txt', 'application/config/database.php', 'application/config/config.php');
+        $skip = array('.git', 'uploads', 'backup', 'version.txt',
+            'application/config/database.php',
+            'application/config/config.php');
         $this->copy_tree($src, FCPATH, $skip);
 
         // 6. Simpan versi terbaru
@@ -122,7 +127,7 @@ class Updater {
             if(in_array($item, $skip, true)) { continue; }
             $s = $src.'/'.$item;
             $d = $dst.'/'.$item;
-            $rel = str_replace('\\', '/', str_replace(FCPATH, '', $d));
+            $rel = $this->relative_path($d);
             if(in_array($rel, $skip, true)) { continue; }
             if(is_dir($s)) {
                 if(!is_dir($d)) { @mkdir($d, 0777, true); }
@@ -132,6 +137,13 @@ class Updater {
                 @chmod($d, 0644);
             }
         }
+    }
+
+    protected function relative_path($path)
+    {
+        $base = rtrim(str_replace('\\', '/', rtrim(FCPATH, '/\\')), '/').'/';
+        $path = str_replace('\\', '/', $path);
+        return strpos($path, $base) === 0 ? substr($path, strlen($base)) : $path;
     }
 
     protected function rrmdir($dir)

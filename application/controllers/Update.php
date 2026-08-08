@@ -14,15 +14,22 @@ class Update extends CI_Controller {
     public function run()
     {
         if(!isset($_POST['run_update'])) { show_404(); return; }
+        $ajax = ($this->input->post('ajax') === '1');
+        $res = array('ok' => false, 'message' => '');
         try {
             $res = $this->updater->run_update();
-            if(!empty($res['ok'])) {
-                $this->session->set_flashdata('success', $res['message']);
-            } else {
-                $this->session->set_flashdata('error', $res['message']);
-            }
         } catch(Exception $e) {
-            $this->session->set_flashdata('error', 'Terjadi kesalahan: '.$e->getMessage());
+            $res = array('ok' => false, 'message' => 'Terjadi kesalahan: '.$e->getMessage());
+        }
+        if($ajax) {
+            $this->output->set_content_type('application/json')
+                ->set_output(json_encode($res));
+            return;
+        }
+        if(!empty($res['ok'])) {
+            $this->session->set_flashdata('success', $res['message']);
+        } else {
+            $this->session->set_flashdata('error', $res['message']);
         }
         $back = $this->input->server('HTTP_REFERER');
         if($back) { redirect($back); } else { redirect('dashboard'); }
