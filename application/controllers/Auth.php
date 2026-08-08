@@ -38,6 +38,7 @@ class Auth extends CI_Controller {
 					'level' => $row->level
 				);
 				$this->session->set_userdata($params);
+				$this->session->sess_regenerate();
 				$this->session->set_flashdata('success', 'Login berhasil');
 				$this->fungsi->log_activity('login', 'user', $row->user_id, 'Login');
 				$this->load->view('login', ['login_ok' => true, 'user_level' => (int)$row->level]);

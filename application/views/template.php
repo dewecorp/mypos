@@ -186,7 +186,7 @@
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="<?=site_url('dashboard')?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <?php if($__lv == 1) { ?>
-            <a class="dropdown-item" href="#" id="update_system"><i class="fas fa-sync-alt"></i> Update Sistem <span class="badge badge-light float-right">v<?=$__ver?></span></a>
+            <a class="dropdown-item" href="#" id="update_system"><i class="fas fa-sync-alt"></i> Update Sistem</a>
             <?php } ?>
             <a class="dropdown-item text-danger" href="<?=site_url('auth/logout')?>" id="logout_link"><i class="fas fa-sign-out-alt"></i> Logout</a>
           </div>
@@ -286,21 +286,11 @@
     });
 
     <?php if(!$__is_pos && $__lv == 1) { ?>
-    $.getJSON('<?=site_url('update/check')?>', function(r){
-      if(r && r.has && r.has.ok) {
-        if(r.has.has) {
-          $('#update_system .badge').text('v'+r.has.current+' → v'+r.has.latest).addClass('badge-danger');
-          if(r.show_notif) {
-            toastr.info('Versi baru v'+r.has.latest+' tersedia. Perbarui lewat menu pengguna.', 'Pembaruan Tersedia');
-          }
-        }
-      }
-    });
     $(document).on('click', '#update_system', function(e){
       e.preventDefault();
       Swal.fire({
         title: 'Konfirmasi Update',
-        html: 'Perbarui sistem ke versi terbaru?<br><strong>Pastikan koneksi stabil.</strong>',
+        html: 'Perbarui sistem dari repositori?<br><strong>Pastikan koneksi stabil.</strong>',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Ya, Update',
