@@ -13,16 +13,19 @@ class Update extends CI_Controller {
 
     public function run()
     {
-        if(!$this->input->is_ajax_request() || strtoupper($this->input->method()) !== 'POST') {
-            show_404();
-            return;
-        }
+        if(empty($this->input->post('run_update'))) { show_404(); return; }
         try {
             $res = $this->updater->run_update();
-            $this->respond(!empty($res['ok']), $res['message']);
+            if(!empty($res['ok'])) {
+                $this->session->set_flashdata('success', $res['message']);
+            } else {
+                $this->session->set_flashdata('error', $res['message']);
+            }
         } catch(Exception $e) {
-            $this->respond(false, 'Terjadi kesalahan: '.$e->getMessage());
+            $this->session->set_flashdata('error', 'Terjadi kesalahan: '.$e->getMessage());
         }
+        $back = $this->input->server('HTTP_REFERER');
+        if($back) { redirect($back); } else { redirect('dashboard'); }
     }
 
     public function check()
@@ -35,11 +38,5 @@ class Update extends CI_Controller {
                 'latest' => $latest,
                 'has' => ($latest !== null && version_compare($latest, $current, '>'))
             )));
-    }
-
-    private function respond($success, $message)
-    {
-        $this->output->set_content_type('application/json')
-            ->set_output(json_encode(array('success' => (bool)$success, 'message' => $message)));
     }
 }
