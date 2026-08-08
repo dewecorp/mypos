@@ -220,7 +220,7 @@
         <?php echo $contents ?>
       </div>
       <footer class="main-footer">
-        <strong>Copyright &copy; <?=date('Y')?> <?=htmlspecialchars($shop_name, ENT_QUOTES)?>.</strong> All rights reserved.
+        <strong>Copyright &copy; <?=date('Y')?> <?=htmlspecialchars($shop_name, ENT_QUOTES)?>.</strong> All rights reserved. <span class="float-right">v<?=$__ver?></span>
       </footer>
     </div>
   </div>
