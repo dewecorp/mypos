@@ -286,11 +286,16 @@
     });
 
     <?php if(!$__is_pos && $__lv == 1) { ?>
+    $.getJSON('<?=site_url('update/check')?>', function(r){
+      if(r && r.has) {
+        toastr.info('Versi baru v'+r.latest+' tersedia.', 'Pembaruan Tersedia');
+      }
+    });
     $(document).on('click', '#update_system', function(e){
       e.preventDefault();
       Swal.fire({
         title: 'Konfirmasi Update',
-        html: 'Perbarui sistem dari repositori?<br><strong>Pastikan koneksi stabil.</strong>',
+        html: 'Perbarui sistem ke versi terbaru?<br><strong>Pastikan koneksi stabil.</strong>',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Ya, Update',
@@ -300,13 +305,14 @@
         if(!r.isConfirmed) { return; }
         Swal.fire({
           title: 'Memproses Update...',
-          html: '<i class="fas fa-spinner fa-spin" style="font-size:3rem;color:#047857;display:block;margin-bottom:.5rem;"></i><span class="text-muted">Mengunduh & memasang pembaruan.<br>Proses ini bisa memakan beberapa saat. Mohon tunggu, jangan tutup halaman.</span>',
-          showConfirmButton: false, allowOutsideClick: false, allowEscapeKey: false
+          html: '<div role="status" class="spinner-border text-success" style="width:3rem;height:3rem;"></div><br><span class="text-muted">Mengunduh & memasang pembaruan. Mohon tunggu, jangan tutup halaman.</span>',
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          allowEscapeKey: false
         });
         $.ajax({
           url: '<?=site_url('update/run')?>',
           method: 'POST',
-          data: {},
           dataType: 'json',
           timeout: 0,
           success: function(res){
@@ -317,7 +323,7 @@
             }
           },
           error: function(xhr){
-            Swal.fire({ title: 'Update Gagal', text: 'Terjadi kesalahan koneksi (' + xhr.status + ')', icon: 'error' });
+            Swal.fire({ title: 'Update Gagal', text: 'Kesalahan koneksi', icon: 'error' });
           }
         });
       });

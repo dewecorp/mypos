@@ -19,16 +19,27 @@ class Update extends CI_Controller {
         }
         try {
             $res = $this->updater->run_update();
-            $this->respond($res['status'], $res['message']);
+            $this->respond(!empty($res['ok']), $res['message']);
         } catch(Exception $e) {
             $this->respond(false, 'Terjadi kesalahan: '.$e->getMessage());
         }
     }
 
+    public function check()
+    {
+        $current = $this->updater->current_version();
+        $latest = $this->updater->latest_version();
+        $this->output->set_content_type('application/json')
+            ->set_output(json_encode(array(
+                'current' => $current,
+                'latest' => $latest,
+                'has' => ($latest !== null && version_compare($latest, $current, '>'))
+            )));
+    }
+
     private function respond($success, $message)
     {
-        $this->output
-            ->set_content_type('application/json')
+        $this->output->set_content_type('application/json')
             ->set_output(json_encode(array('success' => (bool)$success, 'message' => $message)));
     }
 }
