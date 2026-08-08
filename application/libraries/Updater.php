@@ -10,7 +10,7 @@ class Updater {
 
     public function __construct()
     {
-        $this->ci =& get_instance();
+        $this->ci = get_instance();
         $this->ci->config->load('update', true);
         $this->zip_url = $this->ci->config->item('update_zip_fallback_url', 'update');
         $this->version_url = $this->ci->config->item('update_raw_version_url', 'update');
@@ -210,8 +210,8 @@ class MyZipReader {
             if(substr($name, -1) === '/') { if(!is_dir($dest.'/'.$name)) { @mkdir($dest.'/'.$name, 0777, true); } continue; }
             fseek($this->h, $e['offset']);
             if(fread($this->h, 4) !== "PK\x03\x04") { $this->failed[] = $name; continue; }
-            $d = unpack('vx4/vtime/vdate/Vcrc/Vcsize/Vusize/vnlen/vextra', fread($this->h, 26));
-            fseek($this->h, $d['nlen'] + $d['extra'], SEEK_CUR);
+            $d = unpack('vver/vflag/vmethod/vtime/vdate/Vcrc/Vcsize/Vusize/vnlen/vextra', fread($this->h, 26));
+            fseek($this->h, $d['vnlen'] + $d['vextra'], SEEK_CUR);
             $data = $e['csize'] > 0 ? fread($this->h, $e['csize']) : '';
             if($e['method'] === 0) {
                 $raw = $data;
