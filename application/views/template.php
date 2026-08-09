@@ -6,6 +6,8 @@
   $__cls = strtolower($this->router->fetch_class());
   $__met = strtolower($this->router->fetch_method());
   $__ver = file_exists(FCPATH.'version.txt') ? trim(file_get_contents(FCPATH.'version.txt')) : '';
+  $__flash_succ = $this->session->flashdata('success');
+  $__flash_err  = $this->session->flashdata('error');
   if (!isset($title) || !$title) {
     $__map = ['dashboard' => 'Dashboard', 'item' => 'Data Barang', 'sale' => 'Transaksi Penjualan', 'setting' => 'Pengaturan Toko', 'user' => 'Pengguna'];
     $__mapmet = ['report' => 'Laporan', 'add' => 'Tambah', 'edit' => 'Ubah', 'print' => 'Cetak'];
@@ -134,6 +136,21 @@
     .pos-wrap .main-sidebar { display: none; }
     .pos-wrap .content-wrap { padding: 22px; }
 
+    /* ===== Update overlay ===== */
+    #update_overlay {
+      position: fixed; inset: 0; z-index: 99999; display: none;
+      align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+      background: rgba(255,255,255,.94); text-align: center; padding: 20px;
+    }
+    #update_overlay.show { display: flex; }
+    #update_overlay .spinner {
+      width: 52px; height: 52px; border: 6px solid #e2e8f0; border-top-color: #0d9488;
+      border-radius: 50%; animation: updspin .8s linear infinite;
+    }
+    @keyframes updspin { to { transform: rotate(360deg); } }
+    #update_overlay .upd-title { font-size: 1.15rem; font-weight: 800; color: #26304a; }
+    #update_overlay .upd-sub { color: #7a8397; font-size: 13px; line-height: 1.6; }
+
     @media (max-width: 992px) {
       .main-sidebar { margin-left: -250px; position: fixed; z-index: 1050; }
       .sidebar-collapsed .main-sidebar { margin-left: 0; }
@@ -196,6 +213,12 @@
         </div>
       <?php } ?>
     </div>
+  </div>
+
+  <div id="update_overlay">
+    <div class="spinner"></div>
+    <div class="upd-title">Memperbarui Sistem&hellip;</div>
+    <div class="upd-sub">Mengunduh &amp; memasang versi terbaru dari GitHub.<br>Jangan menutup halaman ini. Database tidak diubah.</div>
   </div>
 
   <div class="layout" style="flex:1;">
@@ -288,35 +311,20 @@
       });
     });
 
+    var updateSubmitting = false;
     $(document).on('submit', '#update_sistem_form', function(e){
+      if(updateSubmitting) { return true; }
       e.preventDefault();
-      var $form = $(this);
       Swal.fire({
         title: 'Perbarui Sistem?',
-        text: 'Sistem akan mengambil versi terbaru dari repository. Data dan database tidak akan diubah.',
+        html: 'Sistem akan mengambil versi terbaru dari repository.<br><strong>Data dan database tidak akan diubah.</strong><br><small>Proses butuh beberapa menit.</small>',
         icon: 'question', showCancelButton: true,
         confirmButtonText: 'Ya, perbarui', cancelButtonText: 'Batal'
       }).then(function(res){
         if(!res.isConfirmed) { return; }
-        Swal.fire({
-          title: 'Memperbarui Sistem...',
-          text: 'Mengunduh dan memasang pembaruan. Jangan tutup halaman ini.',
-          allowOutsideClick: false, allowEscapeKey: false,
-          showConfirmButton: false, showCancelButton: false
-        });
-        Swal.showLoading();
-        $.post($form.attr('action'), $form.serialize() + '&ajax=1')
-          .done(function(r){
-            if(r && r.ok) {
-              Swal.fire({ title: 'Sukses', text: r.message || 'Sistem berhasil diperbarui.', icon: 'success' })
-                .then(function(){ window.location.reload(); });
-            } else {
-              Swal.fire({ title: 'Gagal', text: (r && r.message) ? r.message : 'Pembaruan gagal, silakan coba lagi.', icon: 'error' });
-            }
-          })
-          .fail(function(){
-            Swal.fire({ title: 'Gagal', text: 'Tidak dapat terhubung ke server, silakan coba lagi.', icon: 'error' });
-          });
+        updateSubmitting = true;
+        $('#update_overlay').addClass('show');
+        $('#update_sistem_form')[0].submit();
       });
     });
 
@@ -339,6 +347,12 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+  </script>
+  <script>
+    $(function(){
+      <?php if($__flash_succ){ ?> toastr.success(<?=json_encode($__flash_succ, JSON_UNESCAPED_UNICODE)?>, 'Berhasil'); <?php } ?>
+      <?php if($__flash_err){ ?> toastr.error(<?=json_encode($__flash_err, JSON_UNESCAPED_UNICODE)?>, 'Gagal'); <?php } ?>
+    });
   </script>
 </body>
 </html>
