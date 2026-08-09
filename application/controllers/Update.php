@@ -46,4 +46,20 @@ class Update extends CI_Controller {
                 'has' => ($latest !== null && version_compare($latest, $current, '>'))
             )));
     }
+
+    public function test()
+    {
+        $cur = $this->updater->current_version();
+        $late = $this->updater->latest_version();
+        $this->output->set_content_type('application/json')
+            ->set_output(json_encode(array(
+                'ok'         => true,
+                'current'    => $cur,
+                'latest'     => $late,
+                'tersedia'   => ($late !== null && version_compare($late, $cur, '>')),
+                'writable'   => (is_writable(FCPATH) && is_writable(FCPATH.'version.txt')),
+                'curl'       => function_exists('curl_init'),
+                'waktu'      => date('Y-m-d H:i:s')
+            )));
+    }
 }
