@@ -136,21 +136,6 @@
     .pos-wrap .main-sidebar { display: none; }
     .pos-wrap .content-wrap { padding: 22px; }
 
-    /* ===== Update overlay ===== */
-    #update_overlay {
-      position: fixed; inset: 0; z-index: 99999; display: none;
-      align-items: center; justify-content: center; flex-direction: column; gap: 16px;
-      background: rgba(255,255,255,.94); text-align: center; padding: 20px;
-    }
-    #update_overlay.show { display: flex; }
-    #update_overlay .spinner {
-      width: 52px; height: 52px; border: 6px solid #e2e8f0; border-top-color: #0d9488;
-      border-radius: 50%; animation: updspin .8s linear infinite;
-    }
-    @keyframes updspin { to { transform: rotate(360deg); } }
-    #update_overlay .upd-title { font-size: 1.15rem; font-weight: 800; color: #26304a; }
-    #update_overlay .upd-sub { color: #7a8397; font-size: 13px; line-height: 1.6; }
-
     @media (max-width: 992px) {
       .main-sidebar { margin-left: -250px; position: fixed; z-index: 1050; }
       .sidebar-collapsed .main-sidebar { margin-left: 0; }
@@ -213,12 +198,6 @@
         </div>
       <?php } ?>
     </div>
-  </div>
-
-  <div id="update_overlay">
-    <div class="spinner"></div>
-    <div class="upd-title">Memperbarui Sistem&hellip;</div>
-    <div class="upd-sub">Mengunduh &amp; memasang versi terbaru dari GitHub.<br>Jangan menutup halaman ini. Database tidak diubah.</div>
   </div>
 
   <div class="layout" style="flex:1;">
@@ -311,9 +290,9 @@
       });
     });
 
-    var updateSubmitting = false;
+    var updateRunning = false;
     $(document).on('submit', '#update_sistem_form', function(e){
-      if(updateSubmitting) { return true; }
+      if(updateRunning) { return true; }
       e.preventDefault();
       Swal.fire({
         title: 'Perbarui Sistem?',
@@ -322,9 +301,32 @@
         confirmButtonText: 'Ya, perbarui', cancelButtonText: 'Batal'
       }).then(function(res){
         if(!res.isConfirmed) { return; }
-        updateSubmitting = true;
-        $('#update_overlay').addClass('show');
-        $('#update_sistem_form')[0].submit();
+        updateRunning = true;
+        Swal.fire({
+          title: 'Memperbarui Sistem...',
+          text: 'Mengunduh dan memasang pembaruan dari GitHub. Jangan tutup halaman ini.',
+          allowOutsideClick: false, allowEscapeKey: false,
+          showConfirmButton: false, showCancelButton: false
+        });
+        Swal.showLoading();
+        $.ajax({
+          url: '<?=site_url('update/run')?>',
+          method: 'POST',
+          data: { run_update: '1', ajax: '1' },
+          dataType: 'json',
+          timeout: 600000
+        }).done(function(r){
+          if(r && r.ok) {
+            Swal.fire({ icon: 'success', title: 'Sukses', text: r.message || 'Sistem berhasil diperbarui.' })
+              .then(function(){ window.location.reload(); });
+          } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: (r && r.message) ? r.message : 'Pembaruan gagal, coba lagi.' });
+            updateRunning = false;
+          }
+        }).fail(function(){
+          Swal.fire({ icon: 'error', title: 'Gagal', text: 'Proses terhenti saat menghubungi server. Coba lagi.' });
+          updateRunning = false;
+        });
       });
     });
 
