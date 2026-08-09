@@ -125,8 +125,8 @@ class Updater {
     {
         foreach(array_diff(scandir($src), array('.', '..')) as $item) {
             if(in_array($item, $skip, true)) { continue; }
-            $s = $src.'/'.$item;
-            $d = $dst.'/'.$item;
+            $s = rtrim($src, '/\\').'/'.$item;
+            $d = rtrim($dst, '/\\').'/'.$item;
             $rel = $this->relative_path($d);
             if(in_array($rel, $skip, true)) { continue; }
             if(is_dir($s)) {
@@ -211,7 +211,7 @@ class MyZipReader {
             fseek($this->h, $e['offset']);
             if(fread($this->h, 4) !== "PK\x03\x04") { $this->failed[] = $name; continue; }
             $d = unpack('vver/vflag/vmethod/vtime/vdate/Vcrc/Vcsize/Vusize/vnlen/vextra', fread($this->h, 26));
-            fseek($this->h, $d['vnlen'] + $d['vextra'], SEEK_CUR);
+            fseek($this->h, $d['nlen'] + $d['extra'], SEEK_CUR);
             $data = $e['csize'] > 0 ? fread($this->h, $e['csize']) : '';
             if($e['method'] === 0) {
                 $raw = $data;
