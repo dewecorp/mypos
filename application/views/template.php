@@ -6,8 +6,6 @@
   $__cls = strtolower($this->router->fetch_class());
   $__met = strtolower($this->router->fetch_method());
   $__ver = file_exists(FCPATH.'version.txt') ? trim(file_get_contents(FCPATH.'version.txt')) : '';
-  $__flash_succ = $this->session->flashdata('success');
-  $__flash_err  = $this->session->flashdata('error');
   if (!isset($title) || !$title) {
     $__map = ['dashboard' => 'Dashboard', 'item' => 'Data Barang', 'sale' => 'Transaksi Penjualan', 'setting' => 'Pengaturan Toko', 'user' => 'Pengguna'];
     $__mapmet = ['report' => 'Laporan', 'add' => 'Tambah', 'edit' => 'Ubah', 'print' => 'Cetak'];
@@ -58,7 +56,6 @@
     .topbar .dropdown-menu { border-radius: 12px; box-shadow: 0 10px 30px rgba(6,78,59,.18); border: 1px solid #e7ebf2; padding: .4rem 0; }
     .topbar .dropdown-item { border-radius: 8px; margin: 2px 6px; padding: 8px 12px; font-size: 14px; }
     .topbar .dropdown-item i { width: 18px; text-align: center; }
-    .topbar button.dropdown-item:focus, .topbar button.dropdown-item:active { outline: none !important; border: none !important; box-shadow: none !important; }
     .dropdown-toggle-no-caret::after { display: none; }
     .topbar .btn-outline-light { color: #fff; border-color: rgba(255,255,255,.55); }
     .topbar .btn-outline-light:hover { background: rgba(255,255,255,.15); color: #fff; border-color: #fff; }
@@ -188,11 +185,6 @@
             </div>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="<?=site_url('dashboard')?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <?php if($__lv == 1) { ?>
-            <form id="update_sistem_form" method="post" action="<?=site_url('update/run')?>" style="margin:0;">
-              <button type="submit" name="run_update" value="1" class="dropdown-item" title="Perbarui sistem"><i class="fas fa-sync-alt"></i> Update Sistem</button>
-            </form>
-            <?php } ?>
             <a class="dropdown-item text-danger" href="<?=site_url('auth/logout')?>" id="logout_link"><i class="fas fa-sign-out-alt"></i> Logout</a>
           </div>
         </div>
@@ -290,54 +282,6 @@
       });
     });
 
-    var updateRunning = false;
-    $(document).on('submit', '#update_sistem_form', function(e){
-      if(updateRunning) { return true; }
-      e.preventDefault();
-      Swal.fire({
-        title: 'Perbarui Sistem?',
-        html: 'Sistem akan mengambil versi terbaru dari repository.<br><strong>Data dan database tidak akan diubah.</strong><br><small>Proses butuh beberapa menit.</small>',
-        icon: 'question', showCancelButton: true,
-        confirmButtonText: 'Ya, perbarui', cancelButtonText: 'Batal'
-      }).then(function(res){
-        if(!res.isConfirmed) { return; }
-        updateRunning = true;
-        Swal.fire({
-          title: 'Memperbarui Sistem...',
-          text: 'Mengunduh dan memasang pembaruan dari GitHub. Jangan tutup halaman ini.',
-          allowOutsideClick: false, allowEscapeKey: false,
-          showConfirmButton: false, showCancelButton: false
-        });
-        Swal.showLoading();
-        $.ajax({
-          url: '<?=site_url('update/run')?>',
-          method: 'POST',
-          data: { run_update: '1', ajax: '1' },
-          dataType: 'json',
-          timeout: 600000
-        }).done(function(r){
-          if(r && r.ok) {
-            Swal.fire({ icon: 'success', title: 'Sukses', text: r.message || 'Sistem berhasil diperbarui.' })
-              .then(function(){ window.location.reload(); });
-          } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: (r && r.message) ? r.message : 'Pembaruan gagal, coba lagi.' });
-            updateRunning = false;
-          }
-        }).fail(function(){
-          Swal.fire({ icon: 'error', title: 'Gagal', text: 'Proses terhenti saat menghubungi server. Coba lagi.' });
-          updateRunning = false;
-        });
-      });
-    });
-
-    <?php if(!$__is_pos && $__lv == 1) { ?>
-    $.getJSON('<?=site_url('update/check')?>', function(r){
-      if(r && r.has) {
-        toastr.info('Versi baru v'+r.latest+' tersedia.', 'Pembaruan Tersedia');
-      }
-    });
-    <?php } ?>
-
     function updateClock() {
       var now = new Date();
       var days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
@@ -349,12 +293,6 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
-  </script>
-  <script>
-    $(function(){
-      <?php if($__flash_succ){ ?> toastr.success(<?=json_encode($__flash_succ, JSON_UNESCAPED_UNICODE)?>, 'Berhasil'); <?php } ?>
-      <?php if($__flash_err){ ?> toastr.error(<?=json_encode($__flash_err, JSON_UNESCAPED_UNICODE)?>, 'Gagal'); <?php } ?>
-    });
   </script>
 </body>
 </html>
